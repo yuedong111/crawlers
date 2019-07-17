@@ -135,19 +135,16 @@ class QiyeCrawl(object):
     def parse_date_page(self, url):
         item_page = "{}?page={}"
         count = 0
-        notin = ["2019-07", "2019-06", "2019-05-3", "2019-05-29", "2019-05-28", "2019-05-27", "2019-05-26", "2019-05-25"]
+        jumpto = "2019-05-04"
         while True:
             item_url = item_page.format(url, count)
             try:
-                NotIn = False
-                for item in notin:
-                    if item in url:
-                        time.sleep(0.1)
-                        print("跳过")
-                        NotIn = True
+                while True:
+                    if jumpto in url:
                         break
-                if NotIn:
-                    break
+                    else:
+                        print("跳过")
+                        continue
                 self.parse_company(item_url)
             except NotFoundException:
                 print("{} 一共 {} 页".format(url, count))
@@ -177,6 +174,6 @@ if __name__ == "__main__":
         m = (during - int(h)* 3600) / 60
         mili = during - int(h)* 3600 - int(m) * 60
         print("一共爬行了{}小时{}分{}秒  共{}秒".format(int(h), int(m), int(mili), during))
-        print("wait 1 hours")
-        time.sleep(3600)
+        print("wait 0.5 hours")
+        time.sleep(1800)
 
