@@ -39,6 +39,7 @@ class QiyeCrawl(object):
 
     def __init__(self):
         self.session = create_qiye_session()
+        self.jump = False
         # self.session.proxies = Proxies
 
     def parse_date_item(self):
@@ -54,6 +55,7 @@ class QiyeCrawl(object):
             count = count + 1
 
     def parse_page(self, url):
+        time.sleep(random.uniform(0.2, 1))
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         t = soup.find("tbody")
@@ -77,8 +79,6 @@ class QiyeCrawl(object):
         trs = tb.find_all("tr")
         for item in trs:
             name = item.find("td", {"class": "views-field-name"})
-            # print("gongsi url {}".format(url))
-            # print(name.a.text)
             if name and name.a and name.a["href"]:
                 url = self.qiye_home + name.a["href"]
                 self.parse_detail(url)
@@ -135,17 +135,17 @@ class QiyeCrawl(object):
     def parse_date_page(self, url):
         item_page = "{}?page={}"
         count = 0
-        jumpto = "2019-05-04"
+        jump_to = "2019-06-04"
         while True:
             item_url = item_page.format(url, count)
+            if jump_to in url:
+                self.jump = True
             try:
-                while True:
-                    if jumpto in url:
-                        break
-                    else:
-                        print("跳过")
-                        continue
-                self.parse_company(item_url)
+                if self.jump:
+                    self.parse_company(item_url)
+                else:
+                    print("跳过 {}".format(url))
+                    break
             except NotFoundException:
                 print("{} 一共 {} 页".format(url, count))
                 break
@@ -171,9 +171,8 @@ if __name__ == "__main__":
             print(e)
         during = end_time - start_time
         h = during / 3600
-        m = (during - int(h)* 3600) / 60
-        mili = during - int(h)* 3600 - int(m) * 60
+        m = (during - int(h) * 3600) / 60
+        mili = during - int(h) * 3600 - int(m) * 60
         print("一共爬行了{}小时{}分{}秒  共{}秒".format(int(h), int(m), int(mili), during))
         print("wait 0.5 hours")
         time.sleep(1800)
-
