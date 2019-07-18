@@ -132,7 +132,13 @@ def peixunquchong():
             res["date"] = time.time()
             es.index_data(res)
 
-qiyequchong()
+def newest_data():
+    with session_scope() as sess:
+        ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
+        print(ms.registerDate.strip())
+
+# newest_data()
+# qiyequchong()
 # peixunquchong()
 # if res[0] and res[1]:
 #     print("sousuodao")

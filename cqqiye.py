@@ -40,6 +40,7 @@ class QiyeCrawl(object):
     def __init__(self):
         self.session = create_qiye_session()
         self.jump = False
+        self.jump_to = "2019-04-23"
         # self.session.proxies = Proxies
 
     def parse_date_item(self):
@@ -135,7 +136,7 @@ class QiyeCrawl(object):
     def parse_date_page(self, url):
         item_page = "{}?page={}"
         count = 0
-        jump_to = "2019-06-04"
+        jump_to = self.jump_to
         while True:
             item_url = item_page.format(url, count)
             if jump_to in url:
@@ -161,9 +162,13 @@ class NotFoundException(Exception):
 
 if __name__ == "__main__":
     while True:
+        qiye = QiyeCrawl()
+        with session_scope() as sess:
+            ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
+            qiye.jump_to = ms.registerDate.strip()
         start_time = time.time()
         try:
-            QiyeCrawl().start()
+            qiye.start()
             end_time = time.time()
             break
         except Exception as e:
@@ -174,5 +179,7 @@ if __name__ == "__main__":
         m = (during - int(h) * 3600) / 60
         mili = during - int(h) * 3600 - int(m) * 60
         print("一共爬行了{}小时{}分{}秒  共{}秒".format(int(h), int(m), int(mili), during))
+        nowt = time.asctime(time.localtime(time.time()))
+        print(nowt)
         print("wait 0.5 hours")
         time.sleep(1800)
