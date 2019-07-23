@@ -55,8 +55,9 @@ def start():
                 price = span.text
                 res["price"] = price
                 score = item.find_all("span", class_="hotel_value")
-                score = score[0].text
-                res["score"] = score
+                if score:
+                    score = score[0].text
+                    res["score"] = score
                 xc = XieCheng(**res)
                 qxc = sess.query(XieCheng).filter(XieCheng.url == res["url"]).first()
                 if not qxc:
