@@ -32,6 +32,11 @@ driver = create_webdriver()
 def start():
     driver.get("https://www.ctrip.com/?AllianceID=1068271&sid=1955227&ouid=&app=0101F00")
     driver.get(url)
+    jumppage = driver.find_element_by_xpath('//*[@id="txtpage"]')
+    jumppage.clear()
+    jumppage.send_keys("84")
+    jump = driver.find_element_by_xpath('//*[@id="page_info"]/div[2]/input[2]')
+    ActionChains(driver).click(jump).perform()
     r = driver.page_source
     count = 0
     while count < 720:
@@ -63,13 +68,13 @@ def start():
                 if not qxc:
                     sess.add(xc)
                     print(res)
-        # pagediv = soup.find_all("div", class_="c_page_list layoutfix")[0]
-        # current = None
-        # for item in pagediv.find_all("a"):
-        #     if item["class"] and item["class"][0].strip() == "current":
-        #         current = int(item.text)
-        #         print("dangqianye {}".format(item.text))
-        #         break
+        pagediv = soup.find_all("div", class_="c_page_list layoutfix")[0]
+        current = None
+        for item in pagediv.find_all("a"):
+            if item["href"] and item["href"] == "javascript:;":
+                current = int(item.text)
+                print("当前到第{}页".format(item.text))
+                break
         WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="downHerf"]')))
