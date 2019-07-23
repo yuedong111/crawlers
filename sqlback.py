@@ -1,6 +1,5 @@
-from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews
+from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai
 from utils.sqlbackends import session_scope, session_scope_remote
-from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -38,6 +37,7 @@ query_map = {"MeiTuanShop": "select id from meiTuanShop where shop='{shop}' and 
              "JingDong": "select id from jingDong where productName='{productName}' and productUrl='{productUrl}' and price='{price}'",
              "EnterpriseCq": "select id from enterprise where enterpriseName='{enterpriseName}' and address='{address}' and socialCreditCode='{socialCreditCode}'",
              "GoverNews": "select id from govermentnews where title='{title}' and publishDate='{publishDate}' and url='{url}'",
+             "WaiMai": "select id from meituanwaimai where url='{url}'",
              }
 
 
@@ -48,10 +48,13 @@ def zengliang_back():
         session_remote = session_sql_remote()
         ms = session_remote.query(table).order_by(table.id.desc()).first()
         with session_scope() as sess1:
-            res = sess1.execute(query_map.get(item1).format(**ms.__dict__))
-            dd = []
-            for id in res.fetchall():
-                dd.append(id[0])
+            if not ms:
+                dd = [0]
+            else:
+                res = sess1.execute(query_map.get(item1).format(**ms.__dict__))
+                dd = []
+                for id in res.fetchall():
+                    dd.append(id[0])
             id_new = max(dd)
             if len(dd) >= 2:
                 print("youchongfu {} {}".format(item1, dd))
@@ -68,7 +71,6 @@ def zengliang_back():
                 if count % 1000 == 0:
                     session_remote.commit()
             session_remote.commit()
-
 
 
 def get_attr_for_check(table):
