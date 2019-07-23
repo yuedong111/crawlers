@@ -54,6 +54,12 @@ def begin(place):
 def parse_item(driver, r, place, count):
     soup = BeautifulSoup(r, "lxml")
     a = soup.find_all("li", class_="fl rest-li")
+    try:
+        title = soup.title.text.strip()
+    except Exception as e:
+        title = ""
+    if title == "403 Forbidden":
+        raise ForbiddenException("403 forbidden")
     if not a:
         print("{}该区域没有店铺{}".format(place, count))
         print("https://waimai.meituan.com/home/{}".format(place))
@@ -166,6 +172,8 @@ def start(start_place):
         try:
             begin(item)
             time.sleep(1)
+        except ForbiddenException as e:
+            raise e
         except Exception as e:
             print(e)
             print("https://waimai.meituan.com/home/{}".format(item))
@@ -176,5 +184,28 @@ def craw():
         start(quxian.get(item))
 
 
+class ForbiddenException(Exception):
+    pass
+
+
 if __name__ == "__main__":
-    craw()
+    while True:
+        try:
+            start_time = time.time()
+            craw()
+            end_time = time.time()
+            break
+        except ForbiddenException as e:
+            end_time = time.time()
+            print(e)
+        finally:
+            driver.quit()
+        during = end_time - start_time
+        h = during / 3600
+        m = (during - int(h) * 3600) / 60
+        mili = during - int(h) * 3600 - int(m) * 60
+        print("一共爬行了{}小时{}分{}秒  共{}秒".format(int(h), int(m), int(mili), during))
+        nowt = time.asctime(time.localtime(time.time()))
+        print(nowt)
+        print("wait two hours")
+        time.sleep(2 * 3600)
