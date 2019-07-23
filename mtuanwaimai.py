@@ -11,6 +11,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from math import radians, cos, sin, asin, sqrt
 import geohash
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 driver = create_webdriver()
 url_home = "https://waimai.meituan.com"
@@ -38,18 +40,18 @@ def begin(place):
                         load[0].click()
                     time.sleep(2)
             r = driver.page_source
-            parse_item(r, place, count)
+            sta = parse_item(driver, r, place, count)
             break
         count = count + 1
         time.sleep(3)
         if not count % 5:
             r = driver.page_source
-            sta = parse_item(r, place, count)
+            sta = parse_item(driver, r, place, count)
             if sta:
                 break
 
 
-def parse_item(r, place, count):
+def parse_item(driver, r, place, count):
     soup = BeautifulSoup(r, "lxml")
     a = soup.find_all("li", class_="fl rest-li")
     if not a:
@@ -64,10 +66,31 @@ def parse_item(r, place, count):
         res["about"] = div["data-bulletin"].strip().encode(encoding="gbk", errors="ignore").decode("gbk")
         a = div.a
         url = url_home + a["href"]
-        res["url"] = url.strip()
         span = item.find_all("span", class_="score-num fl")
         if span:
             res["score"] = span[0].text.strip()
+        driver.get(url)
+        shop = driver.find_elements_by_xpath("/html/body/div[3]/div[2]/div/div[2]/div[2]")
+        if not shop:
+            driver.get(url)
+        time.sleep(1)
+        try:
+            ActionChains(driver).move_to_element(shop[0]).perform()
+        except Exception as e:
+            print("{} {}".format(url, e))
+        r1 = driver.page_source
+        soup1 = BeautifulSoup(r1, "lxml")
+        div = soup1.find("div", class_="rest-info-down-wrap")
+        timep = div.find("div", class_="clearfix sale-time")
+        if timep:
+            timep = timep.text.split()[-1]
+            res["openTime"] = timep.strip()
+        address = div.find("div", class_="rest-info-thirdpart poi-address")
+        if address:
+            address = address.text.split()[-1]
+            res["address"] = address.strip()
+        time.sleep(1)
+        res["url"] = url.strip()
         wm = WaiMai(**res)
         with session_scope() as sess:
             qr = sess.query(WaiMai).filter(WaiMai.url == res["url"]).first()
@@ -142,6 +165,7 @@ def start(start_place):
     for item in c:
         try:
             begin(item)
+            time.sleep(1)
         except Exception as e:
             print(e)
             print("https://waimai.meituan.com/home/{}".format(item))
