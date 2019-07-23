@@ -11,6 +11,8 @@ import traceback
 import random
 import sys
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 yaowen_url = "http://spb.cq.gov.cn/pagelist.jsp?classid=3698&pageye={}&pageSize=18"
 qianyan_url = "http://kjj.cq.gov.cn/Class.aspx?clsId=294&PageIndex={}"
@@ -141,5 +143,12 @@ def start():
 
 
 if __name__ == "__main__":
-    GovNews().start()
-    start()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(GovNews().start, 'interval', hours=12)
+    scheduler.add_job(start, "interval", hours=12)
+    scheduler.start()
+    try:
+        while True:
+            time.sleep(600)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
