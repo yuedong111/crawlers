@@ -1,7 +1,9 @@
-from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai
+from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai, XieCheng
 from utils.sqlbackends import session_scope, session_scope_remote
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
 
 datatable = ["MeiTuanShop", "JingDong", "EnterpriseCq", "GoverNews"]
 
@@ -38,6 +40,7 @@ query_map = {"MeiTuanShop": "select id from meiTuanShop where shop='{shop}' and 
              "EnterpriseCq": "select id from enterprise where enterpriseName='{enterpriseName}' and address='{address}' and socialCreditCode='{socialCreditCode}'",
              "GoverNews": "select id from govermentnews where title='{title}' and publishDate='{publishDate}' and url='{url}'",
              "WaiMai": "select id from meituanwaimai where url='{url}'",
+             "XieCheng": "select id from xiechenghotel where url = '{url}'",
              }
 
 
@@ -83,4 +86,11 @@ def get_attr_for_check(table):
 
 
 if __name__ == "__main__":
-    zengliang_back()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(zengliang_back, 'interval', hours=6)
+    scheduler.start()
+    try:
+        while True:
+            time.sleep(10)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
