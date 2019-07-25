@@ -1,17 +1,34 @@
 # -*- coding: utf-8 -*-
 import requests
 from bs4 import BeautifulSoup
-from utils.make_sessions import create_dianping_session
+from utils.make_sessions import create_dianping_session, create_webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import re
 from fontTools import ttLib
 import pickle
 import os
+import time
 
 url = "http://www.dianping.com/chongqing/ch80"
 
 item_url = {"meishi": "http://www.dianping.com/chongqing/ch10",
             "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
-            "jiehun": "http://www.dianping.com/chongqing/ch55",}
+            "jiehun": "http://www.dianping.com/chongqing/ch55",
+            "liren": "http://www.dianping.com/chongqing/ch50",
+            "qinzi": "http://www.dianping.com/chongqing/ch70",
+            "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
+            "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
+            "shopping": "http://www.dianping.com/chongqing/ch20",
+            "jiazhuang": "http://www.dianping.com/chongqing/ch90",
+            "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
+            "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
+            "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
+            "aiche": "http://www.dianping.com/chongqing/ch65",
+            "chongwu": "http://www.dianping.com/chongqing/ch95",
+            "hotel": "http://www.dianping.com/chongqing/hotel/"
+            }
 
 
 class Rosetta(object):
@@ -65,6 +82,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
+        self.browser = create_webdriver()
 
     def page_item(self, url):
         r = self.session.get(url)
@@ -86,16 +104,30 @@ class DianPing:
                         break
             comm = item.find("div", class_="comment")
             print(comm.span["title"])
-            phone = self.parse_phone(detail_url)
+            # phone = self.parse_phone(detail_url)
+            while True:
+                time.sleep(2)
+                try:
+                    phone = self.parse_phone(detail_url, url)
+                    break
+                except:
+                    pass
+            print(phone)
 
-    def parse_phone(self, url):
+    def parse_phone(self, url, url2):
         print(url)
-        r1 = self.session.get(url)
-        if "ETag" in r1.headers:
-            self.session.headers["If-None-Match"] = r1.headers["ETag"]
+        # r1 = self.session.get(url)
+        self.browser.get(url2)
+        self.browser.get(url)
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, '//*[@id="basic-info"]')))
+        r1 = self.browser.page_source
+        # if "ETag" in r1.headers:
+            # self.session.headers["If-None-Match"] = r1.headers["ETag"]
         self.session.headers["Referer"] = url
         self.session.headers["Host"] = "s3plus.meituan.net"
-        css = self.css_pattern.search(r1.text)
+        css = self.css_pattern.search(r1)
         if css:
             css_url = css.group(0)
             css_content = self.session.get('http:' + css_url, stream=True)
@@ -110,7 +142,10 @@ class DianPing:
                         for chunk in r.iter_content(chunk_size=8192):
                             if chunk:
                                 f.write(chunk)
-        soup = BeautifulSoup(r1.text, "lxml")
+        soup = BeautifulSoup(r1, "lxml")
+        div = soup.find("div", id="not-found-tip")
+        if div or not r1.strip():
+            return "not-found-tip"
         div = soup.find("div", {"id": "basic-info"})
         p = div.find("p", class_="expand-info tel")
         phone = p.find("span", class_="item")
@@ -146,30 +181,53 @@ class DianPing:
                 print(a["href"])
 
     def parse_jiehun(self, url):
-        r = self.session.get(url)
+        # r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find('div', {"id": "J_boxList"})
         ul = div.find("ul", class_="shop-list")
         lis = ul.find_all("li")
         for item in lis:
+            res = {}
             a = item.a
             if a.get("title"):
-                print(a.get("title"))
+                res["shop"] = a.get("title")
             if a.get("href"):
                 jiehun_url = self.url_home + a.get("href")
+                res["url"] = jiehun_url
             p = item.find_all("p", class_="area-list")
             if p:
                 p = p[0]
-                print(p.text.strip())
+                # print(p.text.strip())
             score = item.find("span", class_="item-rank-rst irr-star40")
             if score:
-                print(score.get("title"))
+                res["score"] = score.get("title")
             r2 = self.session.get(jiehun_url)
             soup = BeautifulSoup(r2.text, "lxml")
             div = soup.find("div", class_="offers-box")
+            if not div:
+               div = soup.find("div", class_="shop-wrap")
+               h1 = div.find("h1", class_="shop-title")
+               # print(h1.text)
+               span = div.find("span", class_="fl road-addr")
+               address = span.text.strip()
+               res["address"] = address
+               phone = div.find("span", class_="icon-phone")
+               res["phone"] = " ".join(phone.text.split()).strip()
+            else:
+                span = div.find("span", class_="info-name")
+                address = span["title"]
+                res["address"] = address.strip()
+                p = div.find("p", class_="expand-info tel")
+                sp = p.find("span", class_="item")
+                res["phone"] = " ".join(sp.text.split()).strip()
+
+    def __del__(self):
+        self.browser.quit()
 
 
 
 
 # DianPing().parse_cate("http://www.dianping.com/chongqing/ch0")
-DianPing().parse_jiehun("http://www.dianping.com/chongqing/ch55/p1")
+DianPing().page_item("http://www.dianping.com/chongqing/ch10/r1608")
+# DianPing().parse_jiehun("http://www.dianping.com/chongqing/ch55/p1")
+# DianPing().parse_phone("http://www.dianping.com/shop/92726787")
