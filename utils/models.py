@@ -8,7 +8,10 @@ mysql_client = create_engine(
     "mysql+mysqlconnector://root:123456@127.0.0.1:3306/products?charset=utf8",
     encoding="utf-8",
 )
-
+mysql_client_remote = create_engine(
+    "mysql+mysqlconnector://root:password@192.168.1.166:3306/crawls?charset=utf8",
+    encoding="utf-8",
+)
 
 class JingDong(Base):
     __tablename__ = "jingDong"
@@ -46,11 +49,11 @@ class EnterpriseCq(Base):
     __tablename__ = "enterprise"
     id = Column(Integer, autoincrement=True, primary_key=True)
     enterpriseName = Column(String(128), index=True)
-    address = Column(String(128))
+    address = Column(String(528))
     socialCreditCode = Column(String(128))
     area = Column(String(64))
     registerDate = Column(String(32))
-    businessScope = Column(String(888))
+    businessScope = Column(String(1222))
     legalRepresentative = Column(String(64))
     registeredFunds = Column(String(64))
     enterpriseType = Column(String(128))
@@ -66,5 +69,35 @@ class GoverNews(Base):
     content = Column(LONGTEXT)
 
 
+class WaiMai(Base):
+    __tablename__ = "meituanwaimai"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    shop = Column(String(200), index=True)
+    openTime = Column(String(256))
+    address = Column(String(512))
+    about = Column(String(666))
+    score = Column(String(32))
+    url = Column(String(128), index=True)
+    geoArea = Column(String(20))
 
-# Base.metadata.create_all(mysql_client)
+
+class XieCheng(Base):
+    __tablename__ = "xiechenghotel"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    hotelName = Column(String(200))
+    address = Column(String(200))
+    price = Column(String(12))
+    score = Column(String(10))
+    url = Column(String(128), index=True)
+
+
+class DZDianPing(Base):
+    __tablename__ = "dazhongdianping"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    shop = Column(String(200))
+    address = Column(String(200))
+    score = Column(String(10))
+    url = Column(String(128), index=True)
+
+Base.metadata.create_all(mysql_client)
+# Base.metadata.create_all(mysql_client_remote)
