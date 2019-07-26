@@ -15,22 +15,23 @@ import time
 
 url = "http://www.dianping.com/chongqing/ch80"
 
-item_url = {"meishi": "http://www.dianping.com/chongqing/ch10",
-            "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
-            "jiehun": "http://www.dianping.com/chongqing/ch55",
-            "liren": "http://www.dianping.com/chongqing/ch50",
-            "qinzi": "http://www.dianping.com/chongqing/ch70",
-            "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
-            "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
-            "shopping": "http://www.dianping.com/chongqing/ch20",
-            "jiazhuang": "http://www.dianping.com/chongqing/ch90",
-            "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
-            "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
-            "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
-            "aiche": "http://www.dianping.com/chongqing/ch65",
-            "chongwu": "http://www.dianping.com/chongqing/ch95",
-            "hotel": "http://www.dianping.com/chongqing/hotel/"
-            }
+item_url = {
+    "meishi": "http://www.dianping.com/chongqing/ch10",
+    "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
+    "jiehun": "http://www.dianping.com/chongqing/ch55",
+    "liren": "http://www.dianping.com/chongqing/ch50",
+    "qinzi": "http://www.dianping.com/chongqing/ch70",
+    "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
+    "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
+    "shopping": "http://www.dianping.com/chongqing/ch20",
+    "jiazhuang": "http://www.dianping.com/chongqing/ch90",
+    "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
+    "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
+    "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
+    "aiche": "http://www.dianping.com/chongqing/ch65",
+    "chongwu": "http://www.dianping.com/chongqing/ch95",
+    "hotel": "http://www.dianping.com/chongqing/hotel/"
+}
 
 
 class Rosetta(object):
@@ -84,9 +85,11 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
+        self.jump = "/ch10/r1632p25"
+        self.status = False
         # self.browser = create_webdriver()
 
-    def page_item(self, url):
+    def page_item(self, url, area):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", {"id": "shop-all-list"})
@@ -95,6 +98,7 @@ class DianPing:
         lis = div.find_all("li")
         for item in lis:
             res = {}
+            res["area"] = area
             a = item.find("a", {"data-hippo-type": "shop"})
             res["shop"] = a["title"]
             detail_url = a["href"]
@@ -204,7 +208,7 @@ class DianPing:
         print(url)
         r = self.session.get(url)
         # with open("test.html", 'w', encoding="utf-8") as f:
-            # f.write(r.text)
+        # f.write(r.text)
         soup = BeautifulSoup(r.text, "lxml")
         if "ch55" in url:
             li = soup.find("li", class_="t-item-box t-district J_li")
@@ -218,7 +222,10 @@ class DianPing:
                     while count < 51:
                         url = url + "p{}".format(count)
                         print(url)
-                        self.parse_jiehun(url)
+                        if hasattr(a, "text"):
+                            self.parse_jiehun(url, a.text)
+                        else:
+                            self.parse_jiehun(url, "未知")
                         time.sleep(0.5)
                         count = count + 1
         elif "hotel" in url:
@@ -231,7 +238,7 @@ class DianPing:
                     while count < 51:
                         url = self.url_home + a["href"] + "p{}".format(count)
                         print(url)
-                        self.parse_hotel(url)
+                        self.parse_hotel(url, a.get("title"))
                         count = count + 1
                         time.sleep(0.5)
         else:
@@ -245,13 +252,13 @@ class DianPing:
                         time.sleep(0.5)
                         try:
                             print(url)
-                            self.page_item(url)
+                            self.page_item(url, a.get("data-click-title"))
                             count = count + 1
                         except Exception as e:
                             print(e)
                             break
 
-    def parse_jiehun(self, url):
+    def parse_jiehun(self, url, area):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find('div', {"id": "J_boxList"})
@@ -259,12 +266,14 @@ class DianPing:
         lis = ul.find_all("li")
         for item in lis:
             res = {}
+            res["area"] = area
             a = item.a
             if a.get("title"):
                 res["shop"] = a.get("title")
             if a.get("href"):
                 jiehun_url = self.url_home + a.get("href")
-                res["url"] = jiehun_url
+                index = jiehun_url.find("?")
+                res["url"] = jiehun_url[:index]
             p = item.find_all("p", class_="area-list")
             if p:
                 p = p[0]
@@ -297,13 +306,14 @@ class DianPing:
                     sess.add(dz)
                     print(res)
 
-    def parse_hotel(self, url):
+    def parse_hotel(self, url, area):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find("ul", class_="hotelshop-list")
         lis = ul.find_all("li", class_="hotel-block")
         for li in lis:
             res = {}
+            res["area"] = area
             h2 = li.find("h2", class_="hotel-name")
             a = h2.find("a", class_="hotel-name-link")
             name = a.text

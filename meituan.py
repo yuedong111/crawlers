@@ -76,48 +76,53 @@ def parse_shop(url):
         else:
             count = 0
             while True:
+                result = {}
                 print("第{}次重试 {}".format(count + 1, url))
                 time.sleep(random.uniform(1, 3))
                 session.headers["User-Agent"] = random.choices(USERAGETNS)[0]
                 r = session.get(url, timeout=5)
                 soup = BeautifulSoup(r.text, 'lxml')
                 head = soup.find("div", {"class": "seller-info-head"})
-                if not head:
-                    resu = parse_shop2(url)
-                    result.update(resu)
-                else:
-                    name = head.find("h1", {"class": "seller-name"})
-                    result["shop"] = name.text.strip()
-                    score = head.find("span", {"class": "score"})
-                    result["score"] = score.text.split()[0]
-                    div = head.find("div", {"class": "seller-info-body"})
-                    items = div.find_all("div", {"class": "item"})
-                    for item in items:
-                        if "地址" in item.text.strip():
-                            address = item.text[item.text.find("：") + 1:]
-                            result["address"] = address
-                        if "电话" in item.text:
-                            phone = item.text[item.text.find("：") + 1:]
-                            result["phone"] = phone
-                        if "时间" in item.text:
-                            time1 = item.text[item.text.find("：") + 1:]
-                            opentime = " ".join(time1.split())
-                            result["openTime"] = opentime
-                if result:
-                    result["url"] = url
-                    mt = MeiTuanShop(**result)
-                    # print(result)
-                    with session_scope() as session1:
-                        session1.add(mt)
-                    if not ess[1] and ess[0]:
-                        EsBackends("meituan").update_data(id=ess[2],
-                                                          body={"link": url, "status": 1, "date": time.time()})
-                    if not ess[0]:
-                        EsBackends("meituan").index_data({"link": url, "status": 1, "date": time.time()})
-                else:
-                    if count >= 3:
-                        break
-                    count = count + 1
+                try:
+                    if not head:
+                        resu = parse_shop2(url)
+                        result.update(resu)
+                    else:
+                        name = head.find("h1", {"class": "seller-name"})
+                        result["shop"] = name.text.strip()
+                        score = head.find("span", {"class": "score"})
+                        result["score"] = score.text.split()[0]
+                        div = head.find("div", {"class": "seller-info-body"})
+                        items = div.find_all("div", {"class": "item"})
+                        for item in items:
+                            if "地址" in item.text.strip():
+                                address = item.text[item.text.find("：") + 1:]
+                                result["address"] = address
+                            if "电话" in item.text:
+                                phone = item.text[item.text.find("：") + 1:]
+                                result["phone"] = phone
+                            if "时间" in item.text:
+                                time1 = item.text[item.text.find("：") + 1:]
+                                opentime = " ".join(time1.split())
+                                result["openTime"] = opentime
+                    if result:
+                        result["url"] = url
+                        mt = MeiTuanShop(**result)
+                        # print(result)
+                        with session_scope() as session1:
+                            session1.add(mt)
+                        if not ess[1] and ess[0]:
+                            EsBackends("meituan").update_data(id=ess[2],
+                                                              body={"link": url, "status": 1, "date": time.time()})
+                        if not ess[0]:
+                            EsBackends("meituan").index_data({"link": url, "status": 1, "date": time.time()})
+                    else:
+                        if count >= 3:
+                            break
+                        count = count + 1
+                except Exception as e:
+                    print(count, e)
+                    break
             if not ess[0]:
                 EsBackends("meituan").index_data({"link": url, "status": 0, "date": time.time()})
             else:
@@ -185,38 +190,36 @@ def parse_pages(url):
 def total_pages(url):
     session.headers["Referer"] = url
     session.headers["Cookie"] = COOKIES
-    r = session.get(url.format(1))
-    soup = BeautifulSoup(r.text, 'lxml')
-    count = None
-    if "meishi" in url:
-        count = 1
-        last_page = 67
-    elif "jiehun" in url:
-        last_page = 11
-    elif "yiliao" in url:
-        last_page = 5
-    elif "shenghuo" in url:
-        last_page = 19
-    elif "xiuxianyule" in url:
-        last_page = 32
-    elif "jiankangliren" in url:
-        last_page = 30
-    elif "qinzi" in url:
-        last_page = 20
-    elif "yundongjianshen" in url:
-        last_page = 12
-    elif "jiazhuang" in url:
-        last_page = 4
-    elif "xuexipeixun" in url:
-        last_page = 12
+    # r = session.get(url.format(1))
+    try:
+        print(url.format(1))
+        driver.get(url.format(1))
+    except:
+        print(url[:-5])
+        driver.get(url[:-5])
+    time.sleep(1)
+    r = driver.page_source
+    with open("test.html", "w", encoding="utf-8") as f:
+        f.write(r)
+    soup = BeautifulSoup(r, 'lxml')
+    nav = soup.find("div", {"class": "mt-pagination"})
+    temp = []
+    if not nav:
+        nav = soup.find("nav", class_="mt-pagination")
+        mas = nav.find_all("a")
+        for item in mas:
+            if hasattr(item, "text"):
+                if item.text.strip() and len(item.text.strip()) < 4:
+                    temp.append(item.text)
     else:
-        nav = soup.find("nav", {"class": "mt-pagination"})
-        ul = nav.find("ul", {"class": "clearfix"})
-        lis = ul.find_all("li", {"class": "num-item"})
-        pages = lis[-1].text
-        last_page = int(pages)
-    if not count:
-        count = 1
+        lis = nav.find_all("span")
+        for item in lis:
+            if hasattr(item, "text"):
+                if item.text.strip() and len(item.text.strip()) < 4:
+                    temp.append(item.text)
+    last_page = int(temp[-1])
+    print(last_page)
+    count = 1
     while count <= last_page:
         page_url = url.format(count)
         try:
@@ -305,10 +308,39 @@ def get_hotel_detail(url):
 def start():
     for item in url_map:
         try:
-            total_pages(url_map[item])
-            driver.quit()
+            r = session.get(url_map[item].format(1))
+            soup = BeautifulSoup(r.text, "lxml")
+            if "shenghuo" in url_map[item]:
+                div = soup.find("div", class_="filter-component")
+                mas = div.find_all("a")
+                for a in mas:
+                    if a.get("href") and a.get("href").startswith("//"):
+                        url = "https:" + a.get("href") + "pn{}/"
+                        try:
+                            total_pages(url)
+                        except Exception as e:
+                            print(e)
+            elif "meishi" in url_map[item]:
+                div = soup.find("div", {"class": "filter", "data-reactid": "15"})
+                mas = div.find_all("a")
+                for a in mas:
+                    if a.get("href") and "?" not in a.get("href"):
+                        url = a.get("href") + "pn{}/"
+                        try:
+                            total_pages(url)
+                        except Exception as e:
+                            print(e)
+            else:
+                div = soup.find("div", {"class": "filter-box"})
+                mas = div.find_all("a")
+                for ite in mas:
+                    if ite.get("href") and ite.get("href").startswith("//"):
+                        url = "https:" + ite.get("href") + "pn{}/"
+                        try:
+                            total_pages(url)
+                        except Exception as e:
+                            print(e)
         except:
-            driver.quit()
             print("error {}: {}".format(traceback.print_exc(), url_map[item]))
 
     get_hotelids(hotel_url)
@@ -319,4 +351,7 @@ if __name__ == "__main__":
     try:
         start()
     except KeyboardInterrupt:
+        driver.quit()
         sys.exit()
+    finally:
+        driver.quit()

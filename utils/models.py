@@ -96,8 +96,10 @@ class DZDianPing(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     shop = Column(String(200))
     address = Column(String(200))
+    area = Column(String(20))
     score = Column(String(10))
     url = Column(String(128), index=True)
+    phone = Column(String(66))
 
 Base.metadata.create_all(mysql_client)
 # Base.metadata.create_all(mysql_client_remote)
