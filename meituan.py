@@ -199,8 +199,8 @@ def total_pages(url):
         driver.get(url[:-5])
     time.sleep(1)
     r = driver.page_source
-    with open("test.html", "w", encoding="utf-8") as f:
-        f.write(r)
+    # with open("test.html", "w", encoding="utf-8") as f:
+    #     f.write(r)
     soup = BeautifulSoup(r, 'lxml')
     nav = soup.find("div", {"class": "mt-pagination"})
     temp = []
