@@ -85,7 +85,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "/ch10/r1632p25"
+        self.jump = "/ch10/r1632"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -246,6 +246,10 @@ class DianPing:
             manya = div.find_all("a")
             for a in manya:
                 if a.get("href"):
+                    # if self.jump in a.get("href"):
+                    #     self.status = True
+                    # if not self.status:
+                    #     continue
                     count = 1
                     while count < 51:
                         url = a["href"] + "p{}".format(count)
