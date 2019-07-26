@@ -16,8 +16,8 @@ import time
 url = "http://www.dianping.com/chongqing/ch80"
 
 item_url = {
-    "meishi": "http://www.dianping.com/chongqing/ch10",
-    "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
+    # "meishi": "http://www.dianping.com/chongqing/ch10",
+    # "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
     "jiehun": "http://www.dianping.com/chongqing/ch55",
     "liren": "http://www.dianping.com/chongqing/ch50",
     "qinzi": "http://www.dianping.com/chongqing/ch70",
@@ -85,7 +85,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "/ch10/r1632"
+        self.jump = "/ch10/r89723"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -220,12 +220,12 @@ class DianPing:
                     url = self.url_home + a["href"]
                     count = 1
                     while count < 51:
-                        url = url + "p{}".format(count)
+                        jiehun_url = url + "p{}".format(count)
                         print(url)
                         if hasattr(a, "text"):
-                            self.parse_jiehun(url, a.text)
+                            self.parse_jiehun(jiehun_url, a.text)
                         else:
-                            self.parse_jiehun(url, "未知")
+                            self.parse_jiehun(jiehun_url, "未知")
                         time.sleep(0.5)
                         count = count + 1
         elif "hotel" in url:
@@ -285,24 +285,33 @@ class DianPing:
             score = item.find("span", class_="item-rank-rst irr-star40")
             if score:
                 res["score"] = score.get("title")
-            r2 = self.session.get(jiehun_url)
-            soup = BeautifulSoup(r2.text, "lxml")
-            div = soup.find("div", class_="offers-box")
-            if not div:
-                div = soup.find("div", class_="shop-wrap")
-                h1 = div.find("h1", class_="shop-title")
-                span = div.find("span", class_="fl road-addr")
-                address = span.text.strip()
-                res["address"] = address
-                phone = div.find("span", class_="icon-phone")
-                res["phone"] = " ".join(phone.text.split()).strip()
-            else:
-                span = div.find("span", class_="info-name")
-                address = span["title"]
-                res["address"] = address.strip()
-                p = div.find("p", class_="expand-info tel")
-                sp = p.find("span", class_="item")
-                res["phone"] = " ".join(sp.text.split()).strip()
+            # r2 = self.session.get(jiehun_url)
+            # print(jiehun_url)
+            # soup = BeautifulSoup(r2.text, "lxml")
+            # div = soup.find("div", class_="offers-box")
+            # if not div:
+            #     div = soup.find("div", class_="shop-wrap")
+            #     if not div:
+            #         div = soup.find_all("div", {"id": "J_boxYouhui", "class": "textshow"})[0]
+            #         span = div.find_all("span", class_="fl")[0]
+            #         if span.get("title"):
+            #             res["address"] = span.get("title")
+            #         sp = div.find_all("span", class_="icon-phone")[0]
+            #         res["phone"] = sp.text
+            #     else:
+            #         h1 = div.find("h1", class_="shop-title")
+            #         span = div.find("span", class_="fl road-addr")
+            #         address = span.text.strip()
+            #         res["address"] = address
+            #         phone = div.find("span", class_="icon-phone")
+            #         res["phone"] = " ".join(phone.text.split()).strip()
+            # else:
+            #     span = div.find("span", class_="info-name")
+            #     address = span["title"]
+            #     res["address"] = address.strip()
+            #     p = div.find("p", class_="expand-info tel")
+            #     sp = p.find("span", class_="item")
+            #     res["phone"] = " ".join(sp.text.split()).strip()
             dz = DZDianPing(**res)
             with session_scope() as sess:
                 qxc = sess.query(DZDianPing).filter(DZDianPing.url == res["url"]).first()
@@ -371,3 +380,4 @@ if __name__ == "__main__":
 # DianPing().parse_phone("http://www.dianping.com/shop/92726787", "lsd")
 # DianPing().parse_hotel("http://www.dianping.com/chongqing/hotel/r102291")
 # DianPing().parse_hotel_detail("http://www.dianping.com/shop/79272817")
+#     DianPing().parse_jiehun("http://www.dianping.com/chongqing/ch55/r42p1", "渝中区")
