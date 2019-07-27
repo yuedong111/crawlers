@@ -18,11 +18,11 @@ url = "http://www.dianping.com/chongqing/ch80"
 item_url = {
     # "meishi": "http://www.dianping.com/chongqing/ch10",
     # "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
-    "jiehun": "http://www.dianping.com/chongqing/ch55",
-    "liren": "http://www.dianping.com/chongqing/ch50",
-    "qinzi": "http://www.dianping.com/chongqing/ch70",
-    "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
-    "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
+    # "jiehun": "http://www.dianping.com/chongqing/ch55",
+    # "liren": "http://www.dianping.com/chongqing/ch50",
+    # "qinzi": "http://www.dianping.com/chongqing/ch70",
+    # "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
+    # "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
     "shopping": "http://www.dianping.com/chongqing/ch20",
     "jiazhuang": "http://www.dianping.com/chongqing/ch90",
     "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
@@ -92,6 +92,31 @@ class DianPing:
     def page_item(self, url, area):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
+        if "ch70" in url:
+            div = soup.find("div", {"id": "J_boxList"})
+            lis = div.find_all("li")
+            for li in lis:
+                res = {}
+                res["area"] = area.strip()
+                name = li.find("a", class_="shopname")
+                if name:
+                    res["shop"] = name.get("title")
+                else:
+                    break
+                d_u = "http:" + li.a.get("href")
+                res["url"] = d_u
+                p = li.find("p", class_="baby-info-scraps")
+                span = p.find("span", class_="key-list")
+                if span:
+                    res["address"] = span.text.strip()
+                mk = li.find("p", class_="remark")
+                res["score"] = mk.span.get("title")
+                dz = DZDianPing(**res)
+                with session_scope() as sess:
+                    qxc = sess.query(DZDianPing).filter(DZDianPing.url == res["url"]).first()
+                    if not qxc:
+                        sess.add(dz)
+                        print(res)
         div = soup.find("div", {"id": "shop-all-list"})
         if not div:
             return "no content"
@@ -217,11 +242,11 @@ class DianPing:
             for item in lis:
                 a = item.find("a")
                 if a.get("href"):
-                    url = self.url_home + a["href"]
+                    url = self.url_home + a["href"] + "p{}"
                     count = 1
                     while count < 51:
-                        jiehun_url = url + "p{}".format(count)
-                        print(url)
+                        jiehun_url = url.format(count)
+                        print(jiehun_url)
                         if hasattr(a, "text"):
                             self.parse_jiehun(jiehun_url, a.text)
                         else:
@@ -241,6 +266,27 @@ class DianPing:
                         self.parse_hotel(url, a.get("title"))
                         count = count + 1
                         time.sleep(0.5)
+        elif "ch70" in url:
+            li = soup.find("li", class_="t-item-box t-district J_li")
+            div = li.find("div", class_="t-list")
+            mli = li.find_all("a")
+            for a in mli:
+                if a.get("href") and a.get("href").startswith("/"):
+                    if a.get("href") == "/chongqing/ch70":
+                        qdurl = "http://www.dianping.com" + a.get("href") + "/p{}"
+                    else:
+                        qdurl = "http://www.dianping.com" + a.get("href") + "p{}"
+                    count = 1
+                    while count < 51:
+                        url1 = qdurl.format(count)
+                        time.sleep(0.5)
+                        try:
+                            print(url1)
+                            self.page_item(url1, a.text)
+                            count = count + 1
+                        except Exception as e:
+                            print(e)
+                            break
         else:
             div = soup.find("div", {"id": "J_nt_items"})
             manya = div.find_all("a")
@@ -270,7 +316,7 @@ class DianPing:
         lis = ul.find_all("li")
         for item in lis:
             res = {}
-            res["area"] = area
+            res["area"] = area.strip()
             a = item.a
             if a.get("title"):
                 res["shop"] = a.get("title")
@@ -282,9 +328,9 @@ class DianPing:
             if p:
                 p = p[0]
                 res["address"] = p.text.strip()
-            score = item.find("span", class_="item-rank-rst irr-star40")
+            score = item.find("p", class_="remark")
             if score:
-                res["score"] = score.get("title")
+                res["score"] = score.span.get("title")
             # r2 = self.session.get(jiehun_url)
             # print(jiehun_url)
             # soup = BeautifulSoup(r2.text, "lxml")
@@ -381,3 +427,4 @@ if __name__ == "__main__":
 # DianPing().parse_hotel("http://www.dianping.com/chongqing/hotel/r102291")
 # DianPing().parse_hotel_detail("http://www.dianping.com/shop/79272817")
 #     DianPing().parse_jiehun("http://www.dianping.com/chongqing/ch55/r42p1", "渝中区")
+#     DianPing().parse_cate("http://www.dianping.com/chongqing/ch70")

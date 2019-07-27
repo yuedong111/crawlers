@@ -16,8 +16,8 @@ from meituanpeixun import parse_peixun
 url_map = {
     # "life": "https://cq.meituan.com/shenghuo/pn{}/",
     # "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
-    "meishi": "https://cq.meituan.com/meishi/pn{}/",
-    "jiankangliren": "https://cq.meituan.com/jiankangliren/pn{}/",
+    # "meishi": "https://cq.meituan.com/meishi/pn{}/",
+    # "jiankangliren": "https://cq.meituan.com/jiankangliren/pn{}/",
     "jiehun": "https://cq.meituan.com/jiehun/pn{}/",
     "qinzi": "https://cq.meituan.com/qinzi/pn{}/",
     "yundong": "https://cq.meituan.com/yundongjianshen/pn{}/",
@@ -187,7 +187,7 @@ def parse_pages(url):
                         parse_shop(shop_url)
 
 
-JUMP = "http://cq.meituan.com/meishi/c20003/"
+JUMP = "http://cq.meituan.com/meishi/c233"
 STATUS = False
 
 
@@ -346,16 +346,31 @@ def start():
                             print(e)
             else:
                 div = soup.find("div", {"class": "filter-box"})
-                mas = div.find_all("a")
-                for ite in mas:
-                    if ite.get("href") and ite.get("href").startswith("//"):
-                        url = "https:" + ite.get("href") + "pn{}/"
-                        try:
-                            total_pages(url)
-                        except Exception as e:
-                            print(e)
+                if not div:
+                    # print(r.text.find("龙湖新壹街店"))
+                    div = soup.find_all("div", class_="tag-group tag-group-expend")[0]
+                    ds = div.find_all("div")
+                    for item in ds:
+                        a = item.a
+                        if a:
+                            if a.get("href") and a.get("href").startswith("//"):
+                                d_u = "https:" + a.get("href") + "pn{}/"
+                                # ares = a.text.strip()
+                                try:
+                                    total_pages(d_u)
+                                except Exception as e:
+                                    print(e)
+                else:
+                    mas = div.find_all("a")
+                    for ite in mas:
+                        if ite.get("href") and ite.get("href").startswith("//"):
+                            url = "https:" + ite.get("href") + "pn{}/"
+                            try:
+                                total_pages(url)
+                            except Exception as e:
+                                print(e)
         except:
-            print("error {}: {}".format(traceback.print_exc(), url_map[item]))
+            print("error {}: {}".format(traceback.print_exc(), url_map[item].format(1)))
 
     get_hotelids(hotel_url)
     print("done!")
