@@ -1,4 +1,4 @@
-from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai, XieCheng
+from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai, XieCheng, DZDianPing, TuNiu
 from utils.sqlbackends import session_scope, session_scope_remote
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -41,6 +41,8 @@ query_map = {"MeiTuanShop": "select id from meiTuanShop where shop='{shop}' and 
              "GoverNews": "select id from govermentnews where title='{title}' and publishDate='{publishDate}' and url='{url}'",
              "WaiMai": "select id from meituanwaimai where url='{url}'",
              "XieCheng": "select id from xiechenghotel where url = '{url}'",
+             "DZDianPing": "select id from dazhongdianping where url = '{url}'",
+             "TuNiu": "select id from tuniu where url = '{url}'",
              }
 
 
@@ -86,11 +88,12 @@ def get_attr_for_check(table):
 
 
 if __name__ == "__main__":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(zengliang_back, 'interval', hours=6)
-    scheduler.start()
-    try:
-        while True:
-            time.sleep(10)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
+    zengliang_back()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(zengliang_back, 'interval', hours=6)
+    # scheduler.start()
+    # try:
+    #     while True:
+    #         time.sleep(10)
+    # except (KeyboardInterrupt, SystemExit):
+    #     scheduler.shutdown()
