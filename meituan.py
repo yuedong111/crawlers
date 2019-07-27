@@ -14,8 +14,8 @@ from jiehun_meishi import parse_jiehun_item, parse_meishi_item
 from meituanpeixun import parse_peixun
 
 url_map = {
-    "life": "https://cq.meituan.com/shenghuo/pn{}/",
-    "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
+    # "life": "https://cq.meituan.com/shenghuo/pn{}/",
+    # "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
     "meishi": "https://cq.meituan.com/meishi/pn{}/",
     "jiankangliren": "https://cq.meituan.com/jiankangliren/pn{}/",
     "jiehun": "https://cq.meituan.com/jiehun/pn{}/",
@@ -187,6 +187,10 @@ def parse_pages(url):
                         parse_shop(shop_url)
 
 
+JUMP = "http://cq.meituan.com/meishi/c20003/"
+STATUS = False
+
+
 def total_pages(url):
     session.headers["Referer"] = url
     session.headers["Cookie"] = COOKIES
@@ -203,21 +207,25 @@ def total_pages(url):
     #     f.write(r)
     soup = BeautifulSoup(r, 'lxml')
     nav = soup.find("div", {"class": "mt-pagination"})
-    temp = []
-    if not nav:
-        nav = soup.find("nav", class_="mt-pagination")
-        mas = nav.find_all("a")
-        for item in mas:
-            if hasattr(item, "text"):
-                if item.text.strip() and len(item.text.strip()) < 4:
-                    temp.append(item.text)
-    else:
-        lis = nav.find_all("span")
-        for item in lis:
-            if hasattr(item, "text"):
-                if item.text.strip() and len(item.text.strip()) < 4:
-                    temp.append(item.text)
-    last_page = int(temp[-1])
+    try:
+        temp = []
+        if not nav:
+            nav = soup.find("nav", class_="mt-pagination")
+            mas = nav.find_all("a")
+            for item in mas:
+                if hasattr(item, "text"):
+                    if item.text.strip() and len(item.text.strip()) < 4:
+                        temp.append(item.text)
+        else:
+            lis = nav.find_all("span")
+            for item in lis:
+                if hasattr(item, "text"):
+                    if item.text.strip() and len(item.text.strip()) < 4:
+                        temp.append(item.text)
+        last_page = int(temp[-1])
+    except Exception as e:
+        print(e)
+        last_page = 1
     print(last_page)
     count = 1
     while count <= last_page:
@@ -242,6 +250,7 @@ def get_hotelids(url):
     while True:
         time.sleep(random.uniform(0.5, 2))
         r = session.get(url.format(temp))
+        print(url.format(temp))
         items = r.json().get("ct_pois")
         temp = temp + 20
         if not items:
@@ -323,10 +332,15 @@ def start():
             elif "meishi" in url_map[item]:
                 div = soup.find("div", {"class": "filter", "data-reactid": "15"})
                 mas = div.find_all("a")
+                global JUMP, STATUS
                 for a in mas:
                     if a.get("href") and "?" not in a.get("href"):
                         url = a.get("href") + "pn{}/"
                         try:
+                            if JUMP in url:
+                                STATUS = True
+                            if not STATUS:
+                                continue
                             total_pages(url)
                         except Exception as e:
                             print(e)
@@ -351,7 +365,7 @@ if __name__ == "__main__":
     try:
         start()
     except KeyboardInterrupt:
-        driver.quit()
+        # driver.quit()
         sys.exit()
-    finally:
-        driver.quit()
+    # finally:
+        # driver.quit()
