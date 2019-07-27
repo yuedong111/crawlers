@@ -42,7 +42,7 @@ class MeiTuanShop(Base):
     address = Column(String(512))
     score = Column(String(32))
     url = Column(String(512))
-    openTime = Column(String(126))
+    openTime = Column(String(226))
 
 
 class EnterpriseCq(Base):
@@ -101,5 +101,19 @@ class DZDianPing(Base):
     url = Column(String(128), index=True)
     phone = Column(String(66))
 
+
+class TuNiu(Base):
+    __tablename__ = "tuniu"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    shop = Column(String(200))
+    address = Column(String(200))
+    area = Column(String(128))
+    score = Column(String(10))
+    url = Column(String(128), index=True)
+    price = Column(String(10))
+    decorateYear = Column(String(10))
+    # phone = Column(String(66))
+
+
 Base.metadata.create_all(mysql_client)
-# Base.metadata.create_all(mysql_client_remote)
+Base.metadata.create_all(mysql_client_remote)
