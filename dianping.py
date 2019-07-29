@@ -24,7 +24,7 @@ item_url = {
     # "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
     # "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
     "shopping": "http://www.dianping.com/chongqing/ch20",
-    "jiazhuang": "http://www.dianping.com/chongqing/ch90",
+    "jiazhuang": "http://www.dianping.com/chongqing/ch90/g90",
     "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
     "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
     "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
@@ -117,33 +117,58 @@ class DianPing:
                     if not qxc:
                         sess.add(dz)
                         print(res)
-        div = soup.find("div", {"id": "shop-all-list"})
-        if not div:
-            return "no content"
-        lis = div.find_all("li")
-        for item in lis:
-            res = {}
-            res["area"] = area
-            a = item.find("a", {"data-hippo-type": "shop"})
-            res["shop"] = a["title"]
-            detail_url = a["href"]
-            res["url"] = detail_url
-            d = item.find("div", class_="operate J_operate Hide")
-            if d:
-                manya = d.find_all("a")
-                for a in manya:
-                    if a["class"] == ["o-map", "J_o-map"]:
-                        res["address"] = a["data-address"]
-                        break
-            comm = item.find("div", class_="comment")
-            res["score"] = comm.span["title"]
-            dz = DZDianPing(**res)
-            with session_scope() as sess:
-                qxc = sess.query(DZDianPing).filter(DZDianPing.url == res["url"]).first()
-                if not qxc:
-                    sess.add(dz)
-                    print(res)
-            # phone = self.parse_phone(detail_url, "xx")
+        elif "ch90" in url:
+            divs = soup.find_all("div", class_="shop-info")
+            for item in divs:
+                res= {}
+                res["area"] = area
+                div = item.find("div", class_="shop-title")
+                h3 = div.h3
+                a = h3.a
+                if a:
+                    d_u = "http:" + a.get("href")
+                    res["url"] = d_u
+                    res["shop"] = a.text
+                div = item.find("div", class_="row shop-info-text-i")
+                span = div.span
+                if span:
+                    res["score"] = span.text
+                span = div.find("span", class_="shop-location")
+                res ["address"] = " ".join(span.text.split())
+                dz = DZDianPing(**res)
+                with session_scope() as sess:
+                    qxc = sess.query(DZDianPing).filter(DZDianPing.url == res["url"]).first()
+                    if not qxc:
+                        sess.add(dz)
+                        print(res)
+        else:
+            div = soup.find("div", {"id": "shop-all-list"})
+            if not div:
+                return "no content"
+            lis = div.find_all("li")
+            for item in lis:
+                res = {}
+                res["area"] = area
+                a = item.find("a", {"data-hippo-type": "shop"})
+                res["shop"] = a["title"]
+                detail_url = a["href"]
+                res["url"] = detail_url
+                d = item.find("div", class_="operate J_operate Hide")
+                if d:
+                    manya = d.find_all("a")
+                    for a in manya:
+                        if a["class"] == ["o-map", "J_o-map"]:
+                            res["address"] = a["data-address"]
+                            break
+                comm = item.find("div", class_="comment")
+                res["score"] = comm.span["title"]
+                dz = DZDianPing(**res)
+                with session_scope() as sess:
+                    qxc = sess.query(DZDianPing).filter(DZDianPing.url == res["url"]).first()
+                    if not qxc:
+                        sess.add(dz)
+                        print(res)
+                # phone = self.parse_phone(detail_url, "xx")
 
     def parse_phone(self, url, url2):
 
@@ -283,6 +308,24 @@ class DianPing:
                         try:
                             print(url1)
                             self.page_item(url1, a.text)
+                            count = count + 1
+                        except Exception as e:
+                            print(e)
+                            break
+        elif "ch90" in url:
+            div = soup.find("div", {"id": "J_shopsearch"})
+            div = div.find_all("div", class_="row")[1]
+            lis = div.find_all("li")
+            for item in lis:
+                a = item.a
+                if a:
+                    d_u = "http:" + a.get("href") + "p{}"
+                    count = 1
+                    while count < 51:
+                        time.sleep(0.5)
+                        try:
+                            print(d_u.format(count))
+                            self.page_item(d_u.format(count), a.text)
                             count = count + 1
                         except Exception as e:
                             print(e)
