@@ -86,22 +86,27 @@ class TuNiuApi:
 
     def get_phone(self):
         url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-07-30&checkoutdate=2019-07-31"
-        count = 1
+        # count = 1
         with session_scope() as sess1:
             tn = sess1.query(TuNiu).filter(TuNiu.phone == None).all()
             for item in tn:
                 hotel_id = item.url.split("/")[-1].strip()
                 r = self.session.get(url.format(hotel_id))
-                count = count + 1
+                # count = count + 1
                 temp = r.json()
                 item.phone = temp.get("data").get("hotel").get("tel")
                 item.district = temp.get("data").get("hotel").get("districtName")
-                if not count % 30:
-                    sess1.commit()
+                sess1.commit()
                 print(temp.get("data").get("hotel").get("tel"))
-                time.sleep(0.5)
+                # time.sleep(0.5)
 
 
 if __name__ == "__main__":
     # TuNiuApi().get_data()
-    TuNiuApi().get_phone()
+    while True:
+        try:
+            TuNiuApi().get_phone()
+            break
+        except Exception as e:
+            print("输验证码 {}".format(e))
+            time.sleep(5)
