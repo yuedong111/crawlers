@@ -34,6 +34,21 @@ item_url = {
 }
 
 
+def yanzhengma_warning(fn):
+
+    def decorete(*args, **kwargs):
+        while True:
+            try:
+                res = fn(*args, **kwargs)
+                break
+            except Exception as e:
+                print("输入验证码 {}".format(e))
+                time.sleep(2)
+        return res
+    return decorete
+
+
+
 class Rosetta(object):
     """source from https://github.com/loricheung/anti-DPAntiSpider.git"""
 
@@ -89,6 +104,7 @@ class DianPing:
         self.status = False
         # self.browser = create_webdriver()
 
+    @yanzhengma_warning
     def page_item(self, url, area):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
@@ -254,6 +270,7 @@ class DianPing:
         os.remove(local_filename)
         return phone
 
+    @yanzhengma_warning
     def parse_cate(self, url):
         print(url)
         r = self.session.get(url)
