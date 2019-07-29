@@ -75,32 +75,32 @@ def parse_item(driver, r, place, count):
         span = item.find_all("span", class_="score-num fl")
         if span:
             res["score"] = span[0].text.strip()
-        driver.get(url)
-        shop = driver.find_elements_by_xpath("/html/body/div[3]/div[2]/div/div[2]/div[2]")
-        if not shop:
-            driver.get(url)
-        time.sleep(1)
-        try:
-            ActionChains(driver).move_to_element(shop[0]).perform()
-        except Exception as e:
-            print("{} {}".format(url, e))
-        r1 = driver.page_source
-        soup1 = BeautifulSoup(r1, "lxml")
-        div = soup1.find("div", class_="rest-info-down-wrap")
-        timep = div.find("div", class_="clearfix sale-time")
-        if timep:
-            timep = timep.text.split()[-1]
-            res["openTime"] = timep.strip()
-        address = div.find("div", class_="rest-info-thirdpart poi-address")
-        if address:
-            address = address.text.split()[-1]
-            res["address"] = address.strip()
-        time.sleep(1)
-        res["url"] = url.strip()
-        wm = WaiMai(**res)
         with session_scope() as sess:
-            qr = sess.query(WaiMai).filter(WaiMai.url == res["url"]).first()
+            qr = sess.query(WaiMai).filter(WaiMai.url == url).first()
             if not qr:
+                driver.get(url)
+                shop = driver.find_elements_by_xpath("/html/body/div[3]/div[2]/div/div[2]/div[2]")
+                if not shop:
+                    driver.get(url)
+                time.sleep(1)
+                try:
+                    ActionChains(driver).move_to_element(shop[0]).perform()
+                except Exception as e:
+                    print("{} {}".format(url, e))
+                r1 = driver.page_source
+                soup1 = BeautifulSoup(r1, "lxml")
+                div = soup1.find("div", class_="rest-info-down-wrap")
+                timep = div.find("div", class_="clearfix sale-time")
+                if timep:
+                    timep = timep.text.split()[-1]
+                    res["openTime"] = timep.strip()
+                address = div.find("div", class_="rest-info-thirdpart poi-address")
+                if address:
+                    address = address.text.split()[-1]
+                    res["address"] = address.strip()
+                time.sleep(1)
+                res["url"] = url.strip()
+                wm = WaiMai(**res)
                 sess.add(wm)
                 print(res)
 
@@ -154,7 +154,8 @@ quxian = {"垫江县": "wm5v5j3xgx0k",
           "江津区": "wm5wdjhhzusg",
           "rongchang": "wm5p75qfm8qg",
           "fengjie": "wmtb7pcgquvx",
-          "yunyang": "wmmrcxg6vfhf"
+          "yunyang": "wmmrcxg6vfhf",
+          "nanping": "wm5zcpupnw6q"
           }
 
 
@@ -166,7 +167,7 @@ def start(start_place):
         d.update(get_3kilo_neighor(temp))
         c.update(get_3kilo_neighor(temp))
         temp = d.pop()
-        if len(c) >= 500:
+        if len(c) >= 300:
             break
     for item in c:
         try:
