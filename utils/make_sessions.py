@@ -89,6 +89,24 @@ def create_yaowen_session():
     return s
 
 
+def create_dianping_session():
+    s = requests.Session()
+    s.headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        "Connection": "keep-alive",
+        "Cache-Control": "max-age=0",
+        "Host": "www.dianping.com",
+        "Upgrade-Insecure-Requests": "1",
+        "Cookie": """_hc.v="\"85fd17cf-fdb1-490d-9e4e-2b7090d0ae6c.1562822672\""; _lxsdk_cuid=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; _lxsdk=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; cy=9; cye=chongqing; s_ViewType=10; aburl=1; wedchatguest=g110114642626128510; cityInfo=%7B%22cityId%22%3A9%2C%22cityName%22%3A%22%E9%87%8D%E5%BA%86%22%2C%22provinceId%22%3A0%2C%22parentCityId%22%3A0%2C%22cityOrderId%22%3A0%2C%22isActiveCity%22%3Afalse%2C%22cityEnName%22%3A%22chongqing%22%2C%22cityPyName%22%3Anull%2C%22cityAreaCode%22%3Anull%2C%22cityAbbrCode%22%3Anull%2C%22isOverseasCity%22%3Afalse%2C%22isScenery%22%3Afalse%2C%22TuanGouFlag%22%3A0%2C%22cityLevel%22%3A0%2C%22appHotLevel%22%3A0%2C%22gLat%22%3A0%2C%22gLng%22%3A0%2C%22directURL%22%3Anull%2C%22standardEnName%22%3Anull%7D; Hm_lvt_4c4fc10949f0d691f3a2cc4ca5065397=1564034271; selectLevel=%7B%22level1%22%3A%222%22%7D; _lx_utm=utm_source%3Dlbdt; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1563950118,1564112965,1564448583; wed_user_path=27814|0; Hm_lpvt_dbeeb675516927da776beeb1d9802bd4=1564451686; _lxsdk_s=16c4093d2c7-e1a-43c-110%7C%7C90"""
+    }
+    return s
+
+
 USERAGETNS = [
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1",
     "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0",
