@@ -102,7 +102,6 @@ def parse_item(driver, r, place, count):
                 res["address"] = address.strip()
         except:
             pass
-        wm = WaiMai(**res)
         with session_scope() as sess:
             qr = sess.query(WaiMai).filter(WaiMai.url == url).first()
             if not qr:
