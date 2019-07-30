@@ -16,19 +16,19 @@ import time
 url = "http://www.dianping.com/chongqing/ch80"
 
 item_url = {
-    # "meishi": "http://www.dianping.com/chongqing/ch10",
-    # "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
+    "meishi": "http://www.dianping.com/chongqing/ch10",
+    "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
     "jiehun": "http://www.dianping.com/chongqing/ch55",
-    # "liren": "http://www.dianping.com/chongqing/ch50",
-    # "qinzi": "http://www.dianping.com/chongqing/ch70",
-    # "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
-    # "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
-    # "shopping": "http://www.dianping.com/chongqing/ch20",
-    # "jiazhuang": "http://www.dianping.com/chongqing/ch90/g90",
-    # "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
-    # "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
-    # "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
-    # "aiche": "http://www.dianping.com/chongqing/ch65",
+    "liren": "http://www.dianping.com/chongqing/ch50",
+    "qinzi": "http://www.dianping.com/chongqing/ch70",
+    "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
+    "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
+    "shopping": "http://www.dianping.com/chongqing/ch20",
+    "jiazhuang": "http://www.dianping.com/chongqing/ch90/g90",
+    "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
+    "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
+    "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
+    "aiche": "http://www.dianping.com/chongqing/ch65",
     "chongwu": "http://www.dianping.com/chongqing/ch95",
     "hotel": "http://www.dianping.com/chongqing/hotel/"
 }

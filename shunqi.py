@@ -92,7 +92,7 @@ class ShunQiCrawl:
                     print(res)
 
     def detail(self, url):
-        time.sleep(0.5)
+        time.sleep(1)
         res = {}
         self.session.headers["Host"] = "www.11467.com"
         r = self.session.get(url)

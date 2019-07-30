@@ -93,10 +93,13 @@ class TuNiuApi:
                 hotel_id = item.url.split("/")[-1].strip()
                 r = self.session.get(url.format(hotel_id))
                 # count = count + 1
-                temp = r.json()
-                item.phone = temp.get("data").get("hotel").get("tel")
-                item.district = temp.get("data").get("hotel").get("districtName")
-                sess1.commit()
+                try:
+                    temp = r.json()
+                    item.phone = temp.get("data").get("hotel").get("tel")
+                    item.district = temp.get("data").get("hotel").get("districtName")
+                    sess1.commit()
+                except Exception as e:
+                    print(hotel_id, e)
                 print(temp.get("data").get("hotel").get("tel"))
                 time.sleep(0.5)
 
