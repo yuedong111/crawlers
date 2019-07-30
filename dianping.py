@@ -18,13 +18,13 @@ url = "http://www.dianping.com/chongqing/ch80"
 item_url = {
     # "meishi": "http://www.dianping.com/chongqing/ch10",
     # "xiuxianyule": "http://www.dianping.com/chongqing/ch30",
-    # "jiehun": "http://www.dianping.com/chongqing/ch55",
+    "jiehun": "http://www.dianping.com/chongqing/ch55",
     # "liren": "http://www.dianping.com/chongqing/ch50",
-    # "qinzi": "http://www.dianping.com/chongqing/ch70",
-    # "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
-    # "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
-    # "shopping": "http://www.dianping.com/chongqing/ch20",
-    # "jiazhuang": "http://www.dianping.com/chongqing/ch90/g90",
+    "qinzi": "http://www.dianping.com/chongqing/ch70",
+    "zhoubianyou": "http://www.dianping.com/chongqing/ch35",
+    "yundongjianshen": "http://www.dianping.com/chongqing/ch45",
+    "shopping": "http://www.dianping.com/chongqing/ch20",
+    "jiazhuang": "http://www.dianping.com/chongqing/ch90/g90",
     "xuexipeixun": "http://www.dianping.com/chongqing/ch75",
     "shenghuofuwu": "http://www.dianping.com/chongqing/ch80",
     "yiliaojiankang": "http://www.dianping.com/chongqing/ch85",
@@ -351,10 +351,10 @@ class DianPing:
             manya = div.find_all("a")
             for a in manya:
                 if a.get("href"):
-                    if self.jump in a.get("href"):
-                        self.status = True
-                    if not self.status:
-                        continue
+                    # if self.jump in a.get("href"):
+                    #     self.status = True
+                    # if not self.status:
+                    #     continue
                     count = 1
                     while count < 51:
                         url = a["href"] + "p{}".format(count)
@@ -477,7 +477,13 @@ class DianPing:
 
 
 if __name__ == "__main__":
-    DianPing().start()
+    while True:
+        try:
+            DianPing().start()
+            time.sleep(600)
+        except:
+            time.sleep(1800)
+
 
 
 

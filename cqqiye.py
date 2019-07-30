@@ -9,7 +9,7 @@ from utils.sqlbackends import session_scope
 from utils.esbackends import EsBackends, es_search
 import random
 from requests.exceptions import ProxyError
-
+import traceback
 patern = re.compile(r"[1-9A-GY]{1}[1239]{1}[1-5]{1}[0-9]{5}[0-9A-Z]{10}")
 
 # ds = get_proxy("https", 500)
@@ -40,7 +40,7 @@ class QiyeCrawl(object):
     def __init__(self):
         self.session = create_qiye_session()
         self.jump = False
-        self.jump_to = "2019-04-23"
+        self.jump_to = "2019"
         # self.session.proxies = Proxies
 
     def parse_date_item(self):
@@ -70,7 +70,7 @@ class QiyeCrawl(object):
             self.parse_date_page(url)
 
     def parse_company(self, url):
-        time.sleep(random.uniform(0.2, 1))
+        time.sleep(random.uniform(0.5, 1))
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", {"class": "view-content"})
@@ -87,7 +87,7 @@ class QiyeCrawl(object):
     def parse_detail(self, url):
         ess = es_search("qiyeminglu", url)
         if not ess[1] or not ess[0]:
-            time.sleep(random.uniform(0.5, 2))
+            time.sleep(random.uniform(1.5, 2))
             print("parse url {}".format(url))
             r = self.session.get(url)
             soup = BeautifulSoup(r.text, "lxml")
@@ -108,7 +108,7 @@ class QiyeCrawl(object):
                 if "地址" in name:
                     res["address"] = value
                 if "地区" in name:
-                    res["area"] = value
+                    res["area"] = value.strip()
                 if "日期" in name:
                     res["registerDate"] = value
                 if "范围" in name:
@@ -173,7 +173,7 @@ if __name__ == "__main__":
             break
         except Exception as e:
             end_time = time.time()
-            print(e)
+            print(traceback.print_exc())
         during = end_time - start_time
         h = during / 3600
         m = (during - int(h) * 3600) / 60
@@ -181,5 +181,5 @@ if __name__ == "__main__":
         print("一共爬行了{}小时{}分{}秒  共{}秒".format(int(h), int(m), int(mili), during))
         nowt = time.asctime(time.localtime(time.time()))
         print(nowt)
-        print("wait 0.5 hours")
-        time.sleep(1800)
+        print("wait 30 minites")
+        time.sleep(30*60)

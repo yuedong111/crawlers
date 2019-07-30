@@ -14,16 +14,17 @@ import geohash
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-driver = create_webdriver()
+# driver = create_webdriver()
 url_home = "https://waimai.meituan.com"
 waimaiurl = "https://waimai.meituan.com/home/{}"
 
 
 def begin(place):
-    driver.get("https://www.meituan.com/")
+    driver.get("https://waimai.meituan.com/")
     driver.get("https://waimai.meituan.com/home/{}".format(place))
     count = 0
     while True:
+        time.sleep(3)
         load = driver.find_elements_by_xpath('//*[@id="loading"]/div')
         if load:
             load = load[0]
@@ -43,7 +44,6 @@ def begin(place):
             sta = parse_item(driver, r, place, count)
             break
         count = count + 1
-        time.sleep(3)
         if not count % 5:
             r = driver.page_source
             sta = parse_item(driver, r, place, count)
@@ -57,6 +57,7 @@ def parse_item(driver, r, place, count):
     try:
         title = soup.title.text.strip()
     except Exception as e:
+        print(e)
         title = ""
     if title == "403 Forbidden":
         raise ForbiddenException("403 forbidden")
@@ -75,6 +76,33 @@ def parse_item(driver, r, place, count):
         span = item.find_all("span", class_="score-num fl")
         if span:
             res["score"] = span[0].text.strip()
+        res["url"] = url.strip()
+        driver.get(url)
+        shop = driver.find_elements_by_xpath("/html/body/div[3]/div[2]/div/div[2]/div[2]")
+        if not shop:
+            driver.get(url)
+        try:
+            ActionChains(driver).move_to_element(shop[0]).perform()
+        except Exception as e:
+            print("{} {}".format(url, e))
+        r1 = driver.page_source
+        soup1 = BeautifulSoup(r1, "lxml")
+        try:
+            div = soup1.find("div", class_="rest-info-down-wrap")
+            timep = div.find("div", class_="clearfix sale-time")
+            if timep:
+                timep = timep.text.split()[-1]
+                res["openTime"] = timep.strip()
+        except:
+            pass
+        try:
+            address = div.find("div", class_="rest-info-thirdpart poi-address")
+            if address:
+                address = address.text.split()[-1]
+                res["address"] = address.strip()
+        except:
+            pass
+        wm = WaiMai(**res)
         with session_scope() as sess:
             qr = sess.query(WaiMai).filter(WaiMai.url == url).first()
             if not qr:
@@ -155,7 +183,8 @@ quxian = {"垫江县": "wm5v5j3xgx0k",
           "rongchang": "wm5p75qfm8qg",
           "fengjie": "wmtb7pcgquvx",
           "yunyang": "wmmrcxg6vfhf",
-          "nanping": "wm5zcpupnw6q"
+          "nanping": "wm5zcpupnw6q",
+          "大渡口": "wm5xz0w86d7u"
           }
 
 
@@ -191,6 +220,7 @@ class ForbiddenException(Exception):
 
 if __name__ == "__main__":
     while True:
+        driver = create_webdriver()
         try:
             start_time = time.time()
             craw()
@@ -210,3 +240,4 @@ if __name__ == "__main__":
         print(nowt)
         print("wait two hours")
         time.sleep(2 * 3600)
+

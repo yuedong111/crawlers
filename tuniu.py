@@ -85,7 +85,7 @@ class TuNiuApi:
             time.sleep(0.5)
 
     def get_phone(self):
-        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-07-30&checkoutdate=2019-07-31"
+        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-07-31&checkoutdate=2019-08-01"
         # count = 1
         with session_scope() as sess1:
             tn = sess1.query(TuNiu).filter(TuNiu.phone == None).all()
@@ -98,7 +98,7 @@ class TuNiuApi:
                 item.district = temp.get("data").get("hotel").get("districtName")
                 sess1.commit()
                 print(temp.get("data").get("hotel").get("tel"))
-                # time.sleep(0.5)
+                time.sleep(0.5)
 
 
 if __name__ == "__main__":
@@ -109,4 +109,4 @@ if __name__ == "__main__":
             break
         except Exception as e:
             print("输验证码 {}".format(e))
-            time.sleep(5)
+            time.sleep(3)

@@ -53,3 +53,10 @@ class MakeToken():
 #
 #     token = MakeToken(areaId, cityName, originUrl, page)
 #     print(token.join_token)
+from utils.make_sessions import create_session
+from bs4 import BeautifulSoup
+session = create_session()
+r = session.get("https://waimai.meituan.com/", timeout=5)
+soup = BeautifulSoup(r.text, "lxml")
+title = soup.title.text
+print(title)

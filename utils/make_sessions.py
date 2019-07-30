@@ -17,18 +17,18 @@ def create_session():
         "Accept-Language": "en-US,en;zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4,zh-TW;q=0.2,"
                            "ja;q=0.2,ru;q=0.2,gl;q=0.2,ko;q=0.2",
         "Pragma": "no-cache",
-        # "Cookie": "shshshfpa=6df8fdaa-e06d-7dc1-2d9a-34565b9b29b1-1540522217; shshshfpb=12377aea9c06e4a55b38e8af29c2ca6630103a320e274ca1c5bd280ea9; areaId=4; PCSYCityID=4; ipLoc-djd=4-50953-50979-0; user-key=5ef807ad-037f-4f77-b3dc-3db51b4c445c; cn=1; __jdu=1540522216092634850635; unpl=V2_ZzNtbUZTRUVyAUdRLB5cB2IEGltLXkpFdQkTUn1JWQNjB0BaclRCFX0UR1JnGFQUZgoZWUJcRhdFCEdkexhdBGYBGlhLVXNILGYAUydcWl5XWEdtQVdzFEUIQlF6HV8GZAMVXEpURBdwAUJVfBtYNVcDGllyZx5NKlIfBCNcDFtXBRZYQVdGFH0IdlVLGGxOCQJfXUZSQhF2C0VUfBhUBmABF1RGVkQXcThHZHg%3d; __jdc=122270672; __jdv=122270672|www.linkhaitao.com|t_1000039483_lh_w6mt7j|tuiguang|557a6804f6134697888a10d77a4755c6|1562633501957; _gcl_au=1.1.1057568808.1562634415; shshshfp=f1f433d12a9a2da86d006c406afb4e99; 3AB9D23F7A4B3C9B=WJ6IQM255ZG6RDIXPNYYWDBUXXKFSEXTM5SEIXCJHCAKRBG7T4SRDCWMWCKZO6ADG73VDIEO6WDHNOSP2G2RLEGIDU; __jda=122270672.1540522216092634850635.1540522216.1562633502.1562639202.13; JSESSIONID=70E7F0502327256D53109F354BD10F47.s1; shshshsID=00abbc85aad2ce14682c8f1d9ec557f2_4_1562639533322; __jdb=122270672.4.1540522216092634850635|13.1562639202"
     }
     return s
 
 
 def create_webdriver() -> webdriver.Chrome:
     opt = webdriver.ChromeOptions()
-    opt.add_argument('headless')
+    # opt.add_argument('headless')
     opt.add_argument('--disable-gpu')
     opt.add_argument('window-size=1280,720')
-    opt.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
+    # opt.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
     opt.add_experimental_option('excludeSwitches', ['enable-automation'])
+    opt.add_argument('log-level=3')
     d = webdriver.Chrome(chrome_options=opt)
     return d
 
@@ -40,15 +40,15 @@ def create_meituan_session():
             "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"
         ),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate",
-        "Accept-Language": "en-US,en;zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4,zh-TW;q=0.2,"
-                           "ja;q=0.2,ru;q=0.2,gl;q=0.2,ko;q=0.2",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "zh-CN,zh;q=0.9",
         "Pragma": "no-cache",
         "Connection": "keep-alive",
         # "Referer": "http://cq.meituan.com/meishi/",
         "Upgrade-Insecure-Requests": "1",
         "Cache-Control": "max-age=0",
-        "Cookie": "_lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; __mta=20889095.1562725959175.1562725959175.1562725959175.1; mtcdn=K; ci=45; rvct=45%2C114; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1562914412; uuid=dd98538429474553a0f0.1563160693.1.0.0; client-id=7fcaa6d4-5179-4c89-bc4d-555478116e0d; lat=29.553193; lng=106.575508; _lxsdk_s=16bf47aac77-e93-952-171%7C%7C33"
+        "Host": "cq.meituan.com",
+        "Cookie": "__mta=20889095.1562725959175.1562725959175.1564211556336.2; _lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; __mta=20889095.1562725959175.1562725959175.1562725959175.1; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; ci=45; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1562914412,1563263956; rvct=45%2C1%2C114; _ga=GA1.2.1247011406.1563181057; uuid=8277f3ea41b7463db851.1564104218.1.0.0; client-id=1f96d392-0947-4a40-b9b0-36d8d749ea88; lat=29.0371; lng=106.6734; _lxsdk_s=16c323f1d11-01d-109-894%7C%7C9"
     }
     return s
 
@@ -66,7 +66,7 @@ def create_qiye_session():
         "Cache-Control": "max-age=0",
         "Host": "gongshang.mingluji.com",
         "Upgrade-Insecure-Requests": "1",
-        "Cookie": "__utmz=152261551.1562899049.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); has_js=1; __utmc=152261551; Hm_lvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1562899049,1562983216,1563152848,1563179374; __utma=152261551.328900377.1562899049.1563179374.1563237230.7; __utmt=1; __utmb=152261551.2.10.1563237230; Hm_lpvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1563237264"
+        "Cookie": "__utmz=152261551.1562899049.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); has_js=1; Hm_lvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1563152848,1563179374,1563868785,1564360505; __utmc=152261551; __utma=152261551.328900377.1562899049.1564369508.1564384398.28; __utmt=1; __utmb=152261551.5.10.1564384398; Hm_lpvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1564385360",
     }
     return s
 
@@ -95,14 +95,33 @@ def create_dianping_session():
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
         ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Referer": "www.dianping.com",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
         "Accept-Encoding": "gzip, deflate",
         "Accept-Language": "zh-CN,zh;q=0.9",
-        "Connection": "keep-alive",
         "Cache-Control": "max-age=0",
+        "Connection": "keep-alive",
         "Host": "www.dianping.com",
         "Upgrade-Insecure-Requests": "1",
-        "Cookie": """_hc.v="\"85fd17cf-fdb1-490d-9e4e-2b7090d0ae6c.1562822672\""; _lxsdk_cuid=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; _lxsdk=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; cy=9; cye=chongqing; s_ViewType=10; aburl=1; wedchatguest=g110114642626128510; cityInfo=%7B%22cityId%22%3A9%2C%22cityName%22%3A%22%E9%87%8D%E5%BA%86%22%2C%22provinceId%22%3A0%2C%22parentCityId%22%3A0%2C%22cityOrderId%22%3A0%2C%22isActiveCity%22%3Afalse%2C%22cityEnName%22%3A%22chongqing%22%2C%22cityPyName%22%3Anull%2C%22cityAreaCode%22%3Anull%2C%22cityAbbrCode%22%3Anull%2C%22isOverseasCity%22%3Afalse%2C%22isScenery%22%3Afalse%2C%22TuanGouFlag%22%3A0%2C%22cityLevel%22%3A0%2C%22appHotLevel%22%3A0%2C%22gLat%22%3A0%2C%22gLng%22%3A0%2C%22directURL%22%3Anull%2C%22standardEnName%22%3Anull%7D; Hm_lvt_4c4fc10949f0d691f3a2cc4ca5065397=1564034271; selectLevel=%7B%22level1%22%3A%222%22%7D; _lx_utm=utm_source%3Dlbdt; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1563950118,1564112965,1564448583; wed_user_path=27814|0; Hm_lpvt_dbeeb675516927da776beeb1d9802bd4=1564451686; _lxsdk_s=16c4093d2c7-e1a-43c-110%7C%7C90"""
+        "Cookie": """navCtgScroll=0; showNav=javascript:; showNav=javascript:; navCtgScroll=0; _hc.v="\"85fd17cf-fdb1-490d-9e4e-2b7090d0ae6c.1562822672\""; _lxsdk_cuid=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; _lxsdk=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; cy=9; cye=chongqing; s_ViewType=10; aburl=1; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1563950118; cy=9; cityid=9; cye=chongqing; wedchatguest=g110114642626128510; cityInfo=%7B%22cityId%22%3A9%2C%22cityName%22%3A%22%E9%87%8D%E5%BA%86%22%2C%22provinceId%22%3A0%2C%22parentCityId%22%3A0%2C%22cityOrderId%22%3A0%2C%22isActiveCity%22%3Afalse%2C%22cityEnName%22%3A%22chongqing%22%2C%22cityPyName%22%3Anull%2C%22cityAreaCode%22%3Anull%2C%22cityAbbrCode%22%3Anull%2C%22isOverseasCity%22%3Afalse%2C%22isScenery%22%3Afalse%2C%22TuanGouFlag%22%3A0%2C%22cityLevel%22%3A0%2C%22appHotLevel%22%3A0%2C%22gLat%22%3A0%2C%22gLng%22%3A0%2C%22directURL%22%3Anull%2C%22standardEnName%22%3Anull%7D; Hm_lvt_4c4fc10949f0d691f3a2cc4ca5065397=1564034271; Hm_lpvt_4c4fc10949f0d691f3a2cc4ca5065397=1564034271; wed_user_path=1040|0; _lx_utm=utm_source%3Dlbdt; Hm_lpvt_dbeeb675516927da776beeb1d9802bd4=1564046168; lastVisitUrl=%2Fchongqing%2Fhotel; selectLevel=%7B%22level1%22%3A%222%22%2C%22level2%22%3A%221%22%7D; _lxsdk_s=16c27f8f515-43-5aa-8cb%7C%7C2565""",
+    }
+    return s
+
+
+def create_tuniu_session():
+    s = requests.Session()
+    s.headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
+        ),
+        "Referer": "http://hotel.tuniu.com/list/300p0s0b0/?city=300&poi=0&stars=0&brands=0",
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.9,ja-JP;q=0.8,ja;q=0.7,en-US;q=0.6,en;q=0.5",
+        "Connection": "keep-alive",
+        "Host": "hotel.tuniu.com",
+        "X-Requested-With": "XMLHttpRequest",
+        "Cookie": "tuniuuser_citycode=MzAw; p_phone_400=4007-999-999; p_phone_level=0; p_global_phone=%2B0086-25-8685-9999; _tacau=MCwwOWIxYWRkZi05ZDgxLTI4MzgtZTRkZi0yNjFiOWUwMjI3ZWMs; _tact=MWU4ZWU5MzUtYWEzNC1iZTZkLTQ0OGYtNTdlNWE4NGJkMzRm; _tacc=1; _ga=GA1.2.350844114.1564131863; OLBSESSID=cpgp411o03nm6ae7s5iekmiqi1; MOBILE_APP_SETTING_STATE-126=CLOSE; hotel_view_history_new_guid=974C1855-9D94-3C70-F0D7-18A4AF4F7DFB; UM_distinctid=16c2d86d4fc71b-0d1aa791e3325a-36664c08-1fa400-16c2d86d4fd5a4; __xsptplus352=352.4.1564216598.1564216598.1%234%7C%7C%7C%7C%7C%23%234vRGfgDQNnXazGokMMmVKTpiK30rD0XB%23; tuniu_partner=MTc2NTgsMCwsN2Q1YjI4Y2Y1NDViOGZjYjllNjBkMTZkMTNhNTYyOTU%3D; _tacz2=taccsr%3Dwww.so%7Ctacccn%3D%28organic%29%7Ctaccmd%3D%28none%29%7Ctaccct%3D%2525E9%252580%252594%2525E7%252589%25259B%2525E6%252597%252585%2525E8%2525A1%25258C%2525E7%2525BD%252591%7Ctaccrt%3D%28none%29; _taca=1564131857258.1564216598446.1564369575147.5; _tacb=NzA1OTE1M2UtOWNmZC1kZTU3LWRjODgtYzhmNDcwYjJmMDE0; PageSwitch=1%2C213612736; _gid=GA1.2.376646834.1564369575; MOBILE_APP_SETTING_OPEN-126=1; tuniuuser_ip_citycode=MzAw; isHaveShowPriceTips=1; Hm_lvt_51d49a7cda10d5dd86537755f081cc02=1564369589; Hm_lpvt_51d49a7cda10d5dd86537755f081cc02=1564369589; hotel_index_search_history=eyJfMzAwIjp7ImNoZWNraW5kYXRlIjoiMjAxOS03LTMwIiwiY2hlY2tvdXRkYXRlIjoiMjAxOS03LTMxIiwiY2l0eV9pZCI6IjMwMCIsImNpdHlfbmFtZSI6IumHjeW6hiJ9fQ==; hotel_checkindate=2019-7-30; hotel_checkoutdate=2019-7-31; hotel_order_begin_date=2019-7-30; hotel_order_end_date=2019-7-31; CNZZDATA5726564=cnzz_eid%3D550169148-1564129206-http%253A%252F%252Fhotel.tuniu.com%252F%26ntime%3D1564367298; _pzfxuvpc=1564131862548%7C3416526400151055857%7C22%7C1564369613459%7C5%7C2167611298499104658%7C1087456991132054631; _pzfxsvpc=1087456991132054631%7C1564369575216%7C4%7Chttps%3A%2F%2Fwww.so.com%2Fs%3Fq%3D%25E9%2580%2594%25E7%2589%259B%25E6%2597%2585%25E8%25A1%258C%25E7%25BD%2591%26src%3Dsrp_suggst_brand_ci_7%26fr%3Dlm%26ls%3Dsm2338310%26lm_extend%3Dctype%253A31%26psid%3Da138216431274d24ab452da02a0607c2%26eci%3D%26nlpv%3Dbrand_ci_7; rg_entrance=010000%2F003001%2F000013%2F000000"
     }
     return s
 
@@ -116,8 +135,7 @@ USERAGETNS = [
     "User-Agent,Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11",
     "User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/6.2.4094.1 Safari/537.36"
 ]
-COOKIES = "__mta=151828102.1562565124818.1562824670554.1562824729202.6; _ga=GA1.2.1825814531.1546998833; _lxsdk_cuid=16bd023931bc8-066f6cebecafc4-e343166-1fa400-16bd023931bc8; _hc.v=3c8a39ae-eab5-7e72-9895-1e0cefa4d0eb.1562565129; uuid=bdc40862df5c4c0bbe55.1562652623.1.0.0; IJSESSIONID=pldhhf1x477h2s7ivnhqaz0g; iuuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; cityname=%E9%87%8D%E5%BA%86; _lxsdk=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; ci=45; rvct=45%2C1; mtcdn=K; userTicket=XQasjWTqmGsUMgtOCcZINxYWlPFPQdghHWrDJFSz; lsu=; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; webp=1; __utmc=74597006; __utmz=74597006.1562738329.1.1.utmcsr=blog.csdn.net|utmccn=(referral)|utmcmd=referral|utmcct=/xing851483876/article/details/81842329; ci3=1; a2h=4; __utma=74597006.1825814531.1546998833.1562738329.1562738511.2; i_extend=H__a100001__b2; latlng=29.5904,106.509888,1562747757451; client-id=07550f00-06b7-4bde-9d07-d78624821eb4; lat=29.599689; lng=106.549822; __mta=151828102.1562565124818.1562810227184.1562824667042.8; _lxsdk_s=16bdf9be952-e87-81-ce%7C%7C8"
-
+COOKIES = "__mta=20889095.1562725959175.1562725959175.1564211556336.2; _lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; __mta=20889095.1562725959175.1562725959175.1562725959175.1; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; ci=45; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1562914412,1563263956; rvct=45%2C1%2C114; _ga=GA1.2.1247011406.1563181057; uuid=8277f3ea41b7463db851.1564104218.1.0.0; client-id=1f96d392-0947-4a40-b9b0-36d8d749ea88; lat=29.0371; lng=106.6734; _lxsdk_s=16c323f1d11-01d-109-894%7C%7C9"
 
 def get_proxy(cate, count):
     ps_map = {"http": "wn", "https": "wt"}

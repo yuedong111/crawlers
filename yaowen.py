@@ -143,12 +143,14 @@ def start():
 
 
 if __name__ == "__main__":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(GovNews().start, 'interval', hours=12)
-    scheduler.add_job(start, "interval", hours=12)
-    scheduler.start()
-    try:
-        while True:
-            time.sleep(600)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
+    GovNews().start()
+    start()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(GovNews().start, 'interval', hours=12)
+    # scheduler.add_job(start, "interval", hours=12)
+    # scheduler.start()
+    # try:
+    #     while True:
+    #         time.sleep(600)
+    # except (KeyboardInterrupt, SystemExit):
+    #     scheduler.shutdown()

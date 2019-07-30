@@ -8,7 +8,7 @@ from utils.models import XieCheng
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.common.exceptions import TimeoutException
 
 def produce_data(se):
     ss = se.split("\n")
@@ -34,12 +34,12 @@ def start():
     driver.get(url)
     jumppage = driver.find_element_by_xpath('//*[@id="txtpage"]')
     jumppage.clear()
-    jumppage.send_keys("84")
+    jumppage.send_keys("176")
     jump = driver.find_element_by_xpath('//*[@id="page_info"]/div[2]/input[2]')
     ActionChains(driver).click(jump).perform()
     r = driver.page_source
-    count = 0
-    while count < 720:
+    current = None
+    while True:
         soup = BeautifulSoup(r, "lxml")
         uls = soup.find_all("ul", class_="hotel_item")
         with session_scope() as sess:
@@ -69,18 +69,27 @@ def start():
                     sess.add(xc)
                     print(res)
         pagediv = soup.find_all("div", class_="c_page_list layoutfix")[0]
-        current = None
         for item in pagediv.find_all("a"):
             if item["href"] and item["href"] == "javascript:;":
                 current = int(item.text)
                 print("当前到第{}页".format(item.text))
                 break
+        if current >= 722:
+            break
         WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="downHerf"]')))
         time.sleep(2)
         npage = driver.find_element_by_xpath('//*[@id="downHerf"]')
         ActionChains(driver).click(npage).perform()
+        time.sleep(3)
+        # try:
+        #     WebDriverWait(driver, 15).until(
+        #         EC.presence_of_element_located(
+        #             (By.XPATH, '//*[@id="17327816"]')))
+        # except TimeoutException:
+        #     print("{} 页chaoshi".format(current))
+        #     continue
         r = driver.page_source
 
 

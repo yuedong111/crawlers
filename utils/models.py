@@ -14,7 +14,7 @@ mysql_client_remote = create_engine(
 )
 
 class JingDong(Base):
-    __tablename__ = "jingDong"
+    __tablename__ = "jingdong"
     id = Column(Integer, autoincrement=True, primary_key=True)
     productName = Column(String(256), index=True)
     shop = Column(String(128), index=True)

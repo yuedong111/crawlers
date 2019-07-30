@@ -107,12 +107,12 @@ def fulfil_cate():
                             item.enterpriseType = value.text.strip()
 
 
-def qiyequchong():
+def quchong(table):
     with session_scope() as sescope:
-        ms = sescope.query(EnterpriseCq).all()
+        ms = sescope.query(table).all()
         res = []
         for item in ms:
-            ids = sescope.query(EnterpriseCq).filter(and_(EnterpriseCq.enterpriseName == item.enterpriseName, EnterpriseCq.socialCreditCode == item.socialCreditCode)).all()
+            ids = sescope.query(table).filter(table.url.strip() == item.url.strip()).all()
             if len(ids) > 1:
                 for iditem in ids:
                     if iditem.id != item.id:
@@ -137,6 +137,10 @@ def newest_data():
         ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
         print(ms.registerDate.strip())
 
+
+# quchong(MeiTuanShop)
+# d = "支持开发票，划重点考试要考的👇🏻👇🏻👇🏻浪漫情💐鲜花店3452345"
+# print(d.encode(encoding="gbk", errors="ignore").decode("gbk"))
 # newest_data()
 # qiyequchong()
 # peixunquchong()
