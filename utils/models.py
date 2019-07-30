@@ -108,11 +108,13 @@ class TuNiu(Base):
     shop = Column(String(200))
     address = Column(String(200))
     area = Column(String(128))
+    phone = Column(String(66))
+    district = Column(String(20))
     score = Column(String(10))
     url = Column(String(128), index=True)
     price = Column(String(10))
     decorateYear = Column(String(10))
-    # phone = Column(String(66))
+
 
 
 Base.metadata.create_all(mysql_client)
