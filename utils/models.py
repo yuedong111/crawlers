@@ -116,6 +116,26 @@ class TuNiu(Base):
     decorateYear = Column(String(10))
 
 
+class ShunQi(Base):
+    __tablename__ = "shunqi"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    products = Column(String(528))
+    area = Column(String(32))
+    representative = Column(String(12))
+    establishedTime = Column(String(22))
+    url = Column(String(66), index=True)
+    postCodes = Column(String(10))
+    businessCode = Column(String(20))
+    fax = Column(String(32))
+    registeredFunds = Column(String(64))
+    phone = Column(String(48))
+    fixedPhone = Column(String(36))
+    operateStatus = Column(String(20))
+    about = Column(LONGTEXT)
+    others = Column(LONGTEXT)
+
 
 Base.metadata.create_all(mysql_client)
-Base.metadata.create_all(mysql_client_remote)
+# Base.metadata.create_all(mysql_client_remote)
