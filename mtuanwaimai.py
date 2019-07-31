@@ -12,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from math import radians, cos, sin, asin, sqrt
 import geohash
 from selenium.webdriver.common.action_chains import ActionChains
+from sqlalchemy import and_
 
 
 # driver = create_webdriver()
@@ -103,7 +104,7 @@ def parse_item(driver, r, place, count):
         except:
             pass
         with session_scope() as sess:
-            qr = sess.query(WaiMai).filter(WaiMai.url == url).first()
+            qr = sess.query(WaiMai).filter(and_(WaiMai.shop == res["shop"], WaiMai.address == res["address"])).first()
             if not qr:
                 driver.get(url)
                 shop = driver.find_elements_by_xpath("/html/body/div[3]/div[2]/div/div[2]/div[2]")
@@ -153,38 +154,39 @@ def get_3kilo_neighor(place):
     return res
 
 
-quxian = {"垫江县": "wm5v5j3xgx0k",
-          "shapingba": "wm78ndvhcgfz",
-          "dazuqu": "wm71jcj56mgm",
-          "hechuan": "wm7dd92ed9vz",
-          "tongliang": "wm73vd15cd6s",
-          "tongnan": "wm77b978p5w8",
-          "yongchuan": "wmhh9qc58mke",
-          "chengkou": "wmtmbbumbpd7",
-          "fuling": "wmk35b7tjfxs",
-          "changshou": "wmk1uu6z879g",
-          "bishan": "wm783khyg7s7",
-          "banan": "wm5z299kz8cu",
-          "xiushan": "wmj9bs17p87s",
-          "pengshui": "wmhyttbd15xy",
-          "wanzhou": "wmmp713y3e7q",
-          "nanchuan": "wmhjv7wtb36j",
-          "zhongxian": "wmku6sgsur2j",
-          "wushanxian": "wmw0ud01nu9j",
-          "巫溪县": "wmtftmp4ejz2",
-          "酉阳": "wmjk55rjfrj5",
-          "丰都": "wmk9gts1cmbq",
-          "武隆": "wmhwu79p7wju",
-          "黔江": "wmm2533kj9u5",
-          "石柱": "wmkfsq6vx9zb",
-          "开县": "wmt169wng7d9",
-          "江津区": "wm5wdjhhzusg",
-          "rongchang": "wm5p75qfm8qg",
-          "fengjie": "wmtb7pcgquvx",
-          "yunyang": "wmmrcxg6vfhf",
-          "nanping": "wm5zcpupnw6q",
-          "大渡口": "wm5xz0w86d7u"
-          }
+quxian = {
+    # "垫江县": "wm5v5j3xgx0k",
+    "shapingba": "wm78ndvhcgfz",
+    "dazuqu": "wm71jcj56mgm",
+    "hechuan": "wm7dd92ed9vz",
+    "tongliang": "wm73vd15cd6s",
+    "tongnan": "wm77b978p5w8",
+    "yongchuan": "wmhh9qc58mke",
+    "chengkou": "wmtmbbumbpd7",
+    "fuling": "wmk35b7tjfxs",
+    "changshou": "wmk1uu6z879g",
+    "bishan": "wm783khyg7s7",
+    "banan": "wm5z299kz8cu",
+    "xiushan": "wmj9bs17p87s",
+    "pengshui": "wmhyttbd15xy",
+    "wanzhou": "wmmp713y3e7q",
+    "nanchuan": "wmhjv7wtb36j",
+    "zhongxian": "wmku6sgsur2j",
+    "wushanxian": "wmw0ud01nu9j",
+    "巫溪县": "wmtftmp4ejz2",
+    "酉阳": "wmjk55rjfrj5",
+    "丰都": "wmk9gts1cmbq",
+    "武隆": "wmhwu79p7wju",
+    "黔江": "wmm2533kj9u5",
+    "石柱": "wmkfsq6vx9zb",
+    "开县": "wmt169wng7d9",
+    "江津区": "wm5wdjhhzusg",
+    "rongchang": "wm5p75qfm8qg",
+    "fengjie": "wmtb7pcgquvx",
+    "yunyang": "wmmrcxg6vfhf",
+    "nanping": "wm5zcpupnw6q",
+    "大渡口": "wm5xz0w86d7u"
+}
 
 
 def start(start_place):
@@ -239,4 +241,3 @@ if __name__ == "__main__":
         print(nowt)
         print("wait two hours")
         time.sleep(2 * 3600)
-
