@@ -143,7 +143,7 @@ class WGQY(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     enterpriseName = Column(String(64), index=True)
     primaryBusiness = Column(String(128))
-    phone = Column(String(32))
+    phone = Column(String(64))
     url = Column(String(48))
     establishedTime = Column(String(22))
     registeredFunds = Column(String(64))
