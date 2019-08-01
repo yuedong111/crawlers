@@ -106,11 +106,10 @@ class WG:
         div = soup.find("div", class_="neirong www")
         mas = div.find_all("a")
         for a in mas:
-            print(a.get("href"), a.text)
-
+            self.parse_page(a.get("href"), a.text)
 
     def start(self):
-        self.parse_page()
+        self.province()
 
 
 if __name__ == "__main__":
