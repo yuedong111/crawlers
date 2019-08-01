@@ -75,7 +75,7 @@ class WaiMai(Base):
     shop = Column(String(200), index=True)
     openTime = Column(String(256))
     address = Column(String(512))
-    about = Column(String(666))
+    about = Column(String(888))
     score = Column(String(32))
     url = Column(String(128), index=True)
     geoArea = Column(String(20))
@@ -100,6 +100,7 @@ class DZDianPing(Base):
     score = Column(String(10))
     url = Column(String(128), index=True)
     phone = Column(String(66))
+    openTime = Column(String(66))
 
 
 class TuNiu(Base):
@@ -137,5 +138,18 @@ class ShunQi(Base):
     others = Column(LONGTEXT)
 
 
+class WGQY(Base):
+    __tablename__ = "wanguoqiye"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(64), index=True)
+    primaryBusiness = Column(String(128))
+    phone = Column(String(32))
+    url = Column(String(48))
+    establishedTime = Column(String(22))
+    registeredFunds = Column(String(64))
+    category = Column(String(128))
+    about = Column(LONGTEXT)
+
+
 Base.metadata.create_all(mysql_client)
-# Base.metadata.create_all(mysql_client_remote)
+Base.metadata.create_all(mysql_client_remote)

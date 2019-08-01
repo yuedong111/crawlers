@@ -1,0 +1,75 @@
+# -*- coding: utf-8 -*-
+from bs4 import BeautifulSoup
+from utils.make_sessions import create_session
+import time
+from utils.models import WGQY
+from utils.sqlbackends import session_scope
+
+
+class WG:
+
+    url = "https://www.trustexporter.com/chongqing/pn{}.htm"
+
+    def __init__(self):
+        self.session = create_session()
+
+    def parse_page(self):
+        count = 1
+        while count < 251:
+            r = self.session.get(self.url.format(count))
+            soup = BeautifulSoup(r.text, "lxml")
+            div = soup.find("div", class_="left_box")
+            uls = div.find_all("ul")
+            for item in uls:
+                res = {}
+                a = item.find("a")
+                res["enterpriseName"] = a.get("title")
+                res["url"] = a.get("href")
+                lis = item.find_all("li")
+                mb = lis[1].text
+                res["primaryBusiness"] = mb.strip()
+                if len(lis) > 2:
+                    phone = lis[2].text.strip()
+                    res["phone"] = phone
+                with session_scope() as sess:
+                    wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
+                    if not wgs:
+                        result = self.parse_detail(res["url"])
+                        res.update(result)
+                        wg = WGQY(**res)
+                        sess.add(wg)
+            count = count + 1
+
+    def parse_detail(self, url):
+        time.sleep(1)
+        res = {}
+        r = self.session.get(url)
+        soup = BeautifulSoup(r.text, "lxml")
+        divs = soup.find_all("div", class_="mainkcontent")
+        content = divs[0].find("div", class_="content")
+        if content:
+            res["about"] = content.text
+        div = divs[-1]
+        tds = div.find_all("td")
+        temp = {}
+        for index, value in enumerate(tds):
+            if len(tds) > index + 1:
+                temp[value.text.strip()] = tds[index+1].text.strip()
+            index = index + 2
+        for key in temp.keys():
+            if "成立时间：" in key:
+                res["establishedTime"] = temp[key]
+            elif "注册资金：" in key:
+                res["registeredFunds"] = temp[key]
+            elif "所属行业：" in key:
+                res["category"] = temp[key]
+        return res
+
+    def start(self):
+        self.parse_page()
+
+
+if __name__ == "__main__":
+    WG().start()
+
+
