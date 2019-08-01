@@ -6,13 +6,15 @@ from utils.make_sessions import create_shunqi_session
 import time
 from utils.models import ShunQi
 from utils.sqlbackends import session_scope
+import random
 
 
 class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = ""
+        self.jump = "yunlongzhen/pn6"
+        self.status = False
         self.session = create_shunqi_session()
 
     def category(self):
@@ -61,10 +63,17 @@ class ShunQiCrawl:
         count = 1
         while count < int(total_pages) + 1:
             d_u = url + "pn{}".format(count)
+            if self.jump in d_u:
+                self.status = True
+            if not self.status:
+                count = count + 1
+                continue
             self.url_list(d_u, area)
             count = count + 1
 
     def url_list(self, url, area):
+        print("list url {}".format(url))
+        time.sleep(random.uniform(1, 3))
         self.session.headers["Host"] = "chongqing.11467.com"
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
@@ -92,7 +101,8 @@ class ShunQiCrawl:
                     print(res)
 
     def detail(self, url):
-        time.sleep(1)
+        print("detail url {}".format(url))
+        time.sleep(random.uniform(2, 3))
         res = {}
         self.session.headers["Host"] = "www.11467.com"
         r = self.session.get(url)
