@@ -8,21 +8,33 @@ from utils.sqlbackends import session_scope
 
 class WG:
 
+    url_home = "https://www.trustexporter.com"
     url = "https://www.trustexporter.com/chongqing/pn{}.htm"
 
     def __init__(self):
         self.session = create_session()
 
-    def parse_page(self):
-        count = 123
-        while count < 251:
-            print(self.url.format(count))
-            r = self.session.get(self.url.format(count), verify=False)
+    def parse_page(self, url, area):
+        d_url = url + "pn{}.htm"
+        count = 1
+        r = self.session.get(d_url.format(count))
+        soup = BeautifulSoup(r.text, "lxml")
+        divp = soup.find("div", class_="pages")
+        if not divp:
+            total_page = 1
+        else:
+            cite = divp.find("cite").text
+            temp = cite.split("/")[-1]
+            total_page = int(temp[:-1])
+        while count < total_page + 1:
+            print(d_url.format(count))
+            r = self.session.get(d_url.format(count))
             soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", class_="left_box")
             uls = div.find_all("ul")
             for item in uls:
                 res = {}
+                res["location"] = area
                 a = item.find("a")
                 res["enterpriseName"] = a.get("title")
                 res["url"] = a.get("href")
@@ -88,11 +100,26 @@ class WG:
                 res["location"] = temp[key]
         return res
 
+    def province(self):
+        r = self.session.get(self.url_home)
+        soup = BeautifulSoup(r.text, "lxml")
+        div = soup.find("div", class_="neirong www")
+        mas = div.find_all("a")
+        for a in mas:
+            print(a.get("href"), a.text)
+
+
     def start(self):
         self.parse_page()
 
 
 if __name__ == "__main__":
-    WG().start()
+    WG().province()
+    # while True:
+    #     try:
+    #         WG().start()
+    #         break
+    #     except Exception as e:
+    #         time.sleep(30)
 
 
