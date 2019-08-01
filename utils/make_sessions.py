@@ -23,10 +23,11 @@ def create_session():
 
 def create_webdriver() -> webdriver.Chrome:
     opt = webdriver.ChromeOptions()
-    # opt.add_argument('headless')
+    opt.add_argument('headless')
     opt.add_argument('--disable-gpu')
     opt.add_argument('window-size=1280,720')
-    # opt.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
+    opt.add_argument("--proxy-server=http://127.0.0.1:8080")
+    opt.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
     opt.add_experimental_option('excludeSwitches', ['enable-automation'])
     opt.add_argument('log-level=3')
     d = webdriver.Chrome(chrome_options=opt)
@@ -48,7 +49,7 @@ def create_meituan_session():
         "Upgrade-Insecure-Requests": "1",
         "Cache-Control": "max-age=0",
         "Host": "cq.meituan.com",
-        "Cookie": "__mta=20889095.1562725959175.1562725959175.1564211556336.2; _lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; __mta=20889095.1562725959175.1562725959175.1562725959175.1; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; ci=45; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1562914412,1563263956; rvct=45%2C1%2C114; _ga=GA1.2.1247011406.1563181057; uuid=8277f3ea41b7463db851.1564104218.1.0.0; client-id=1f96d392-0947-4a40-b9b0-36d8d749ea88; lat=29.0371; lng=106.6734; _lxsdk_s=16c323f1d11-01d-109-894%7C%7C9"
+        "Cookie": "__mta=151828102.1562565124818.1562661401039.1564621502514.8; _ga=GA1.2.1825814531.1546998833; _lxsdk_cuid=16bd023931bc8-066f6cebecafc4-e343166-1fa400-16bd023931bc8; _hc.v=3c8a39ae-eab5-7e72-9895-1e0cefa4d0eb.1562565129; iuuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; _lxsdk=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; webp=1; a2h=4; wm_order_channel=default; utm_source=; __utma=74597006.1825814531.1546998833.1562738511.1563519924.3; __utmz=74597006.1563519924.3.2.utmcsr=blog.csdn.net|utmccn=(referral)|utmcmd=referral|utmcct=/xing851483876/article/details/81842329; ci=45; cityname=%E9%87%8D%E5%BA%86; i_extend=C189913015384320739764905118182476349850_b1_c0_e153957522001196166114GimthomepageallcateH__a100001__b3; rvct=45%2C30%2C1; uuid=a6a26792ab9148a8b436.1564107123.1.0.0; client-id=8dd5b549-ab92-44e4-a1c9-313f4476bc82; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; __mta=151828102.1562565124818.1564536497942.1564621361672.15; lat=29.463506; lng=106.549321; _lxsdk_s=16c4ab34ee5-0dd-b8d-79%7C%7C11"
     }
     return s
 
@@ -138,7 +139,7 @@ def create_shunqi_session():
         "Connection": "keep-alive",
         "Cache-Control": "max-age=0",
         "Upgrade-Insecure-Requests": "1",
-        "Cookie": "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564452370,1564452440; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564452881"
+        "Cookie": "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564555393"
     }
     return s
 
@@ -152,7 +153,7 @@ USERAGETNS = [
     "User-Agent,Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11",
     "User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/6.2.4094.1 Safari/537.36"
 ]
-COOKIES = "__mta=20889095.1562725959175.1562725959175.1564211556336.2; _lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; __mta=20889095.1562725959175.1562725959175.1562725959175.1; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; ci=45; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1562914412,1563263956; rvct=45%2C1%2C114; _ga=GA1.2.1247011406.1563181057; uuid=8277f3ea41b7463db851.1564104218.1.0.0; client-id=1f96d392-0947-4a40-b9b0-36d8d749ea88; lat=29.0371; lng=106.6734; _lxsdk_s=16c323f1d11-01d-109-894%7C%7C9"
+COOKIES = "__mta=210483882.1562565121313.1562565121313.1564621570914.2; _ga=GA1.2.1825814531.1546998833; _lxsdk_cuid=16bd023931bc8-066f6cebecafc4-e343166-1fa400-16bd023931bc8; __mta=210483882.1562565121313.1562565121313.1562565121313.1; _hc.v=3c8a39ae-eab5-7e72-9895-1e0cefa4d0eb.1562565129; iuuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; _lxsdk=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; webp=1; a2h=4; wm_order_channel=default; utm_source=; __utma=74597006.1825814531.1546998833.1562738511.1563519924.3; __utmz=74597006.1563519924.3.2.utmcsr=blog.csdn.net|utmccn=(referral)|utmcmd=referral|utmcct=/xing851483876/article/details/81842329; ci=45; cityname=%E9%87%8D%E5%BA%86; i_extend=C189913015384320739764905118182476349850_b1_c0_e153957522001196166114GimthomepageallcateH__a100001__b3; rvct=45%2C30%2C1; uuid=a6a26792ab9148a8b436.1564107123.1.0.0; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; client-id=f055f018-1a2e-4701-8db0-0dbb73787be7; lat=29.463506; lng=106.549321; _lxsdk_s=16c4ab34ee5-0dd-b8d-79%7C%7C14"
 
 def get_proxy(cate, count):
     ps_map = {"http": "wn", "https": "wt"}

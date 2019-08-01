@@ -14,10 +14,10 @@ class WG:
         self.session = create_session()
 
     def parse_page(self):
-        count = 1
+        count = 123
         while count < 251:
             print(self.url.format(count))
-            r = self.session.get(self.url.format(count))
+            r = self.session.get(self.url.format(count), verify=False)
             soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", class_="left_box")
             uls = div.find_all("ul")
@@ -48,7 +48,7 @@ class WG:
         time.sleep(0.5)
         print("detail {}".format(url))
         res = {}
-        r = self.session.get(url)
+        r = self.session.get(url, verify=False)
         soup = BeautifulSoup(r.text, "lxml")
         cname = soup.find("div", {"id": "logoi"}).text.strip()
         index = cname.find("http")
