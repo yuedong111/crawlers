@@ -16,6 +16,7 @@ class WG:
     def parse_page(self):
         count = 1
         while count < 251:
+            print(self.url.format(count))
             r = self.session.get(self.url.format(count))
             soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", class_="left_box")
@@ -31,6 +32,9 @@ class WG:
                 if len(lis) > 2:
                     phone = lis[2].text.strip()
                     res["phone"] = phone
+                # result = self.parse_detail(res["url"])
+                # res.update(result)
+                # print(res)
                 with session_scope() as sess:
                     wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
                     if not wgs:
@@ -41,10 +45,27 @@ class WG:
             count = count + 1
 
     def parse_detail(self, url):
-        time.sleep(1)
+        time.sleep(0.5)
+        print("detail {}".format(url))
         res = {}
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
+        cname = soup.find("div", {"id": "logoi"}).text.strip()
+        index = cname.find("http")
+        cname = cname[:index].strip()
+        tda = soup.find("td", {"id": "side"})
+        sc = tda.find_all("div", class_="sidekcontent")
+        for ds in sc:
+            if ds.previous_sibling and ds.previous_sibling.previous_sibling.div.text.strip() == cname:
+                divsc = ds
+                lis = divsc.find_all("li")
+                tem = ''
+                for item in lis:
+                    if "地址" in item.text:
+                        res["address"] = item.text
+                    else:
+                        tem = tem + item.text + " "
+                res["phone"] = tem
         divs = soup.find_all("div", class_="mainkcontent")
         content = divs[0].find("div", class_="content")
         if content:
@@ -63,6 +84,8 @@ class WG:
                 res["registeredFunds"] = temp[key]
             elif "所属行业：" in key:
                 res["category"] = temp[key]
+            elif "所 在 地：" in key:
+                res["location"] = temp[key]
         return res
 
     def start(self):
