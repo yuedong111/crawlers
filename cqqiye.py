@@ -71,8 +71,12 @@ class QiyeCrawl(object):
 
     def parse_company(self, url):
         time.sleep(random.uniform(0.5, 1))
+        self.session.headers["Referer"] = url
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
+        title = soup.title.text.strip()
+        if title == "403 Forbidden":
+            raise Exception("403 Forbidden")
         div = soup.find("div", {"class": "view-content"})
         if not div:
             raise NotFoundException()
@@ -163,9 +167,9 @@ class NotFoundException(Exception):
 if __name__ == "__main__":
     while True:
         qiye = QiyeCrawl()
-        with session_scope() as sess:
-            ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-            qiye.jump_to = ms.registerDate.strip()
+        # with session_scope() as sess:
+        #     ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
+        qiye.jump_to = "2018-08-13"
         start_time = time.time()
         try:
             qiye.start()
