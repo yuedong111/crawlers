@@ -13,6 +13,8 @@ class WG:
 
     def __init__(self):
         self.session = create_session()
+        self.jump = ""
+        self.status = False
 
     def parse_page(self, url, area):
         d_url = url + "pn{}.htm"
@@ -28,6 +30,11 @@ class WG:
             total_page = int(temp[:-1])
         while count < total_page + 1:
             print(d_url.format(count))
+            if self.jump in d_url.format(count):
+                self.status = True
+            if not self.status:
+                count = count + 1
+                continue
             r = self.session.get(d_url.format(count))
             soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", class_="left_box")
@@ -44,9 +51,6 @@ class WG:
                 if len(lis) > 2:
                     phone = lis[2].text.strip()
                     res["phone"] = phone
-                # result = self.parse_detail(res["url"])
-                # res.update(result)
-                # print(res)
                 with session_scope() as sess:
                     wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
                     if not wgs:
@@ -113,12 +117,11 @@ class WG:
 
 
 if __name__ == "__main__":
-    WG().province()
-    # while True:
-    #     try:
-    #         WG().start()
-    #         break
-    #     except Exception as e:
-    #         time.sleep(30)
+    while True:
+        try:
+            WG().start()
+            break
+        except Exception as e:
+            time.sleep(300)
 
 
