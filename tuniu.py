@@ -94,7 +94,7 @@ class TuNiuApi:
                         lj["current_page"] = page
                         lj["current_city"] = city
                         json.dump(lj, f)
-                    raise e
+                raise e
             if not total:
                 print("now page is {}".format(page))
                 break
