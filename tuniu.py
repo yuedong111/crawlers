@@ -23,6 +23,11 @@ class TuNiuApi:
         self.session = create_tuniu_session()
         self.city = {}
         self.status = False
+        self.start_time = time.time()
+        with open("config.json", "r", encoding="utf-8") as f:
+            lj = json.load(f)
+            self.current_city = lj.get("current_city")
+            self.current_page = lj.get("current_page")
 
     def parse_city(self):
         with open("tuniucity.html", "r", encoding="utf-8") as f:
@@ -68,7 +73,7 @@ class TuNiuApi:
     def get_all_data(self, cid, city):
         page = 1
         while True:
-            if city == "北京" and page == 98:
+            if city == self.current_city and page == self.current_page:
                 self.status = True
             if not self.status:
                 page = page + 1
@@ -78,7 +83,19 @@ class TuNiuApi:
             r = self.session.get(self.url.format(cid=cid, page=page))
             r.encoding = "utf-8"
             temp = r.json().get("data")
-            if not temp.get("total"):
+            try:
+                total = temp.get("total")
+            except Exception as e:
+                end_time = time.time()
+                if end_time - self.start_time > 100:
+                    with open("config.json", "r+", encoding="utf-8") as f:
+                        lj = json.load(f)
+                    with open("config.json", "w", encoding="utf-8") as f:
+                        lj["current_page"] = page
+                        lj["current_city"] = city
+                        json.dump(lj, f)
+                    raise e
+            if not total:
                 print("now page is {}".format(page))
                 break
             data_list = temp.get("list")
@@ -205,11 +222,10 @@ class TuNiuApi:
 
 
 if __name__ == "__main__":
-    TuNiuApi().start()
-    # while True:
-    #     try:
-    #         TuNiuApi().get_phone()
-    #         break
-    #     except Exception as e:
-    #         print("输验证码 {}".format(e))
-    #         time.sleep(2)
+    while True:
+        try:
+            TuNiuApi().start()
+            break
+        except Exception as e:
+            print("输验证码 {}".format(e))
+            time.sleep(2)
