@@ -78,31 +78,6 @@ def parse_item(driver, r, place, count):
         if span:
             res["score"] = span[0].text.strip()
         res["url"] = url.strip()
-        # driver.get(url)
-        # shop = driver.find_elements_by_xpath("/html/body/div[3]/div[2]/div/div[2]/div[2]")
-        # if not shop:
-        #     driver.get(url)
-        # try:
-        #     ActionChains(driver).move_to_element(shop[0]).perform()
-        # except Exception as e:
-        #     print("{} {}".format(url, e))
-        # r1 = driver.page_source
-        # soup1 = BeautifulSoup(r1, "lxml")
-        # try:
-        #     div = soup1.find("div", class_="rest-info-down-wrap")
-        #     timep = div.find("div", class_="clearfix sale-time")
-        #     if timep:
-        #         timep = timep.text.split()[-1]
-        #         res["openTime"] = timep.strip()
-        # except:
-        #     pass
-        # try:
-        #     address = div.find("div", class_="rest-info-thirdpart poi-address")
-        #     if address:
-        #         address = address.text.split()[-1]
-        #         res["address"] = address.strip()
-        # except:
-        #     pass
         with session_scope() as sess:
             qr = sess.query(WaiMai).filter(and_(WaiMai.shop == res["shop"], WaiMai.about == res["about"])).first()
             if not qr:
@@ -153,16 +128,16 @@ def geodistance(nagt1, nagt2):
 def get_3kilo_neighor(place):
     pnum = geohash.decode(place)
     res = list()
-    res.append(geohash.encode(pnum[0], pnum[1] - 0.03))
-    res.append(geohash.encode(pnum[0] - 0.1, pnum[1]))
-    res.append(geohash.encode(pnum[0] + 0.1, pnum[1]))
-    res.append(geohash.encode(pnum[0], pnum[1] + 0.03))
+    res.append(geohash.encode(pnum[0], pnum[1] - 0.01))
+    res.append(geohash.encode(pnum[0] - 0.02, pnum[1]))
+    res.append(geohash.encode(pnum[0] + 0.02, pnum[1]))
+    res.append(geohash.encode(pnum[0], pnum[1] + 0.01))
     return res
 
 
 quxian = {
-    # "垫江县": "wm5v5j3xgx0k",
-    # "shapingba": "wm78ndvhcgfz",
+    "垫江县": "wm5v5j3xgx0k",
+    "shapingba": "wm78ndvhcgfz",
     "dazuqu": "wm71jcj56mgm",
     "hechuan": "wm7dd92ed9vz",
     "tongliang": "wm73vd15cd6s",
@@ -203,7 +178,7 @@ def start(start_place):
         d.update(get_3kilo_neighor(temp))
         c.update(get_3kilo_neighor(temp))
         temp = d.pop()
-        if len(c) >= 300:
+        if len(c) >= 800:
             break
     for item in c:
         try:
