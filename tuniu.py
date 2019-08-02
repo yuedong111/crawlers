@@ -9,14 +9,29 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import time
-from utils.models import TuNiu
+from utils.models import TuNiu, TuNiuAll
+from concurrent import futures
+import traceback
 
 
 class TuNiuApi:
     # session = create_tuniu_session()
+    url = "https://hotel.tuniu.com/ajax/list?search%5Bcity%5D={cid}&search%5BcheckInDate%5D=2019-8-3&search%5BcheckOutDate%5D=2019-8-4&search%5BcityCode%5D={cid}&page={page}"
+    url_home = "https://hotel.tuniu.com"
 
     def __init__(self):
         self.session = create_tuniu_session()
+        self.city = {}
+        self.status = False
+
+    def parse_city(self):
+        with open("tuniucity.html", "r", encoding="utf-8") as f:
+            content = f.read()
+        soup = BeautifulSoup(content, "lxml")
+        div = soup.find("div", {"id": "popCity_box"})
+        lis = div.find_all("a")
+        for item in lis:
+            self.city[item.get("code")] = item.get("title")
 
     def driver_get(self):
         url = "http://hotel.tuniu.com/list/300p0s0b0/"
@@ -50,19 +65,60 @@ class TuNiuApi:
                 price = ps.text
                 print(price)
 
+    def get_all_data(self, cid, city):
+        page = 1
+        while True:
+            if city == "北京" and page == 82:
+                self.status = True
+            if not self.status:
+                continue
+            print("the page is {}".format(page))
+            r = self.session.get(self.url.format(cid=cid, page=page))
+            r.encoding = "utf-8"
+            temp = r.json().get("data")
+            if not temp.get("total"):
+                print("now page is {}".format(page))
+                break
+            data_list = temp.get("list")
+            for item in data_list:
+                res = {}
+                res["city"] = city
+                res["address"] = item.get("address")
+                # print(item.get("name"))
+                d_url = "http://hotel.tuniu.com" + item.get("url")
+                res["url"] = d_url
+                res["shop"] = item.get("name")
+                res["score"] = item.get("remarkScore")
+                res["price"] = item.get("startPrice")
+                res["decorateYear"] = item.get("decorateYear")
+                area = json.dumps(item.get("pos"))
+                res["area"] = area
+                tn = TuNiuAll(**res)
+                with session_scope() as sess:
+                    qxc = sess.query(TuNiuAll).filter(TuNiuAll.url == res["url"]).first()
+                    if not qxc:
+                        sess.add(tn)
+                        print(res)
+            page = page + 1
+            time.sleep(0.5)
+
     def get_data(self):
-        page = 2
-        url = "http://hotel.tuniu.com/ajax/list?search%5BcityCode%5D=300&search%5BcheckInDate%5D=2019-7-30&search%5BcheckOutDate%5D=2019-7-31&search%5Bkeyword%5D=&suggest=&sort%5Bfirst%5D%5Bid%5D=recommend&sort%5Bfirst%5D%5Btype%5D=&sort%5Bsecond%5D=&sort%5Bthird%5D=cash-back-after&page={}&returnFilter=0"
+        page = 5
+        url = "http://hotel.tuniu.com/ajax/list?search%5BcityCode%5D=300&search%5BcheckInDate%5D=2019-8-4&search%5BcheckOutDate%5D=2019-8-5&search%5Bkeyword%5D=&suggest=&sort%5Bfirst%5D%5Bid%5D=recommend&sort%5Bfirst%5D%5Btype%5D=&sort%5Bsecond%5D=&sort%5Bthird%5D=cash-back-after&page={}&returnFilter=0"
         while True:
             print("the page is {}".format(page))
             r = self.session.get(url.format(page))
             r.encoding = "utf-8"
-            # res = json.loads(r.text)
-            # print(r.json())
-            if not r.json():
+            temp = r.json().get("data")
+            try:
+                total = temp.get("total")
+            except Exception as e:
+                print(e,temp)
+                raise e
+            if not total:
                 print("now page is {}".format(page))
                 break
-            data_list = r.json().get("data").get("list")
+            data_list = temp.get("list")
             for item in data_list:
                 res = {}
                 res["address"] = item.get("address")
@@ -85,31 +141,73 @@ class TuNiuApi:
             time.sleep(0.5)
 
     def get_phone(self):
-        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-07-31&checkoutdate=2019-08-01"
-        # count = 1
-        with session_scope() as sess1:
-            tn = sess1.query(TuNiu).filter(TuNiu.phone == None).all()
+        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-08-1&checkoutdate=2019-08-02"
+        count = 1
+        # res = []
+        with session_scope() as sess2:
+            tn = sess2.query(TuNiu).filter(TuNiu.phone == None).all()
             for item in tn:
                 hotel_id = item.url.split("/")[-1].strip()
+                count = count + 1
+                # if count < 39:
+                #     continue
+                # res.append(hotel_id)
+            # try:
+            #     with futures.ProcessPoolExecutor(max_workers=10) as executor:
+            #         for item in executor.map(self.sub_get_phone, res):
+            #             print(item)
+            # except KeyboardInterrupt:
+            #     exit(0)
                 r = self.session.get(url.format(hotel_id))
                 # count = count + 1
                 try:
                     temp = r.json()
                     item.phone = temp.get("data").get("hotel").get("tel")
                     item.district = temp.get("data").get("hotel").get("districtName")
-                    sess1.commit()
-                except Exception as e:
-                    print(hotel_id, e)
+                    sess2.commit()
+                except AttributeError as e:
+                    print(hotel_id , e)
+                    if "list" in str(e):
+                        continue
+                    else:
+                        raise e
                 print(temp.get("data").get("hotel").get("tel"))
-                time.sleep(0.5)
+                # time.sleep(3)
+
+    def sub_get_phone(self,hotel_id):
+        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-08-1&checkoutdate=2019-08-02"
+        with session_scope() as sess2:
+            tn = sess2.query(TuNiu).filter(TuNiu.phone == None).all()
+            for item in tn:
+                hotel_id1 = item.url.split("/")[-1].strip()
+                if hotel_id1 == hotel_id:
+                    r = self.session.get(url.format(hotel_id), timeout=3)
+                    try:
+                        temp = r.json()
+                        item.phone = temp.get("data").get("hotel").get("tel")
+                        item.district = temp.get("data").get("hotel").get("districtName")
+                        print("cha ru titiao {}".format(temp.get("data").get("hotel").get("tel")))
+                        sess2.commit()
+                        break
+                    except Exception as e:
+                        print("{}has error {}".format(hotel_id, e))
+                        break
+                    finally:
+                        sess2.commit()
+
+    def start(self):
+        self.parse_city()
+        for key in self.city.keys():
+            if key != 300:
+                self.get_all_data(key, self.city[key])
 
 
 if __name__ == "__main__":
-    # TuNiuApi().get_data()
-    while True:
-        try:
-            TuNiuApi().get_phone()
-            break
-        except Exception as e:
-            print("输验证码 {}".format(e))
-            time.sleep(3)
+    TuNiuApi().start()
+    # while True:
+    #     try:
+    #         TuNiuApi().get_phone()
+    #         break
+    #     except Exception as e:
+    #         print("输验证码 {}".format(e))
+    #         time.sleep(2)
