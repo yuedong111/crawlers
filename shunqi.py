@@ -13,7 +13,7 @@ class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = "yunlongzhen/pn6"
+        self.jump = "chengkou/pn10"
         self.status = False
         self.session = create_shunqi_session()
 
@@ -155,7 +155,13 @@ class ShunQiCrawl:
 
 
 if __name__ == "__main__":
-    ShunQiCrawl().start()
+    while True:
+        try:
+            ShunQiCrawl().start()
+            break
+        except Exception as e:
+            print(e)
+            time.sleep(1200)
 
 # ShunQi().category()
 # ShunQi().url_list("http://chongqing.11467.com/liangping/huilongzhen/pn1", "sld")
