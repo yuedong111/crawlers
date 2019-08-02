@@ -68,9 +68,11 @@ class TuNiuApi:
     def get_all_data(self, cid, city):
         page = 1
         while True:
-            if city == "北京" and page == 82:
+            if city == "北京" and page == 98:
                 self.status = True
             if not self.status:
+                page = page + 1
+                print("tiaoguo {} {}".format(city, page))
                 continue
             print("the page is {}".format(page))
             r = self.session.get(self.url.format(cid=cid, page=page))
