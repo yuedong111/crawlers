@@ -13,7 +13,7 @@ class WG:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = ""
+        self.jump = "fuzhou/pn6"
         self.status = False
 
     def parse_page(self, url, area):
@@ -64,7 +64,8 @@ class WG:
         time.sleep(0.5)
         print("detail {}".format(url))
         res = {}
-        r = self.session.get(url, verify=False)
+        self.session.headers["Cookie"] = "Hm_lvt_908376e0e856e8b64f7af6081984a5d1=1564708800; Hm_lpvt_908376e0e856e8b64f7af6081984a5d1=1564710060"
+        r = self.session.get(url, timeout=5)
         soup = BeautifulSoup(r.text, "lxml")
         cname = soup.find("div", {"id": "logoi"}).text.strip()
         index = cname.find("http")
@@ -122,6 +123,7 @@ if __name__ == "__main__":
             WG().start()
             break
         except Exception as e:
+            print(e)
             time.sleep(300)
 
 
