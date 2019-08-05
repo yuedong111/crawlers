@@ -23,8 +23,6 @@ class TuNiuApi:
     def __init__(self):
         self.session = create_tuniu_session()
         self.city = {}
-        today = datetime.date.today()
-        self.url = self.url.format(tomorrow=today+datetime.timedelta(days=1), aftert=today+datetime.timedelta(days=2))
         self.status = False
         self.start_time = time.time()
         with open("config.json", "r", encoding="utf-8") as f:
@@ -75,6 +73,7 @@ class TuNiuApi:
 
     def get_all_data(self, cid, city):
         page = 1
+        today = datetime.date.today()
         while True:
             if city == self.current_city and page == self.current_page:
                 self.status = True
@@ -83,7 +82,8 @@ class TuNiuApi:
                 print("tiaoguo {} {}".format(city, page))
                 continue
             print("the page is {}".format(page))
-            r = self.session.get(self.url.format(cid=cid, page=page))
+            r = self.session.get(self.url.format(cid=cid, page=page, tomorrow=today + datetime.timedelta(days=1),
+                                                 aftert=today + datetime.timedelta(days=2)))
             r.encoding = "utf-8"
             temp = r.json().get("data")
             try:
@@ -136,7 +136,7 @@ class TuNiuApi:
             try:
                 total = temp.get("total")
             except Exception as e:
-                print(e,temp)
+                print(e, temp)
                 raise e
             if not total:
                 print("now page is {}".format(page))
@@ -175,12 +175,12 @@ class TuNiuApi:
                 # if count < 39:
                 #     continue
                 # res.append(hotel_id)
-            # try:
-            #     with futures.ProcessPoolExecutor(max_workers=10) as executor:
-            #         for item in executor.map(self.sub_get_phone, res):
-            #             print(item)
-            # except KeyboardInterrupt:
-            #     exit(0)
+                # try:
+                #     with futures.ProcessPoolExecutor(max_workers=10) as executor:
+                #         for item in executor.map(self.sub_get_phone, res):
+                #             print(item)
+                # except KeyboardInterrupt:
+                #     exit(0)
                 r = self.session.get(url.format(hotel_id))
                 # count = count + 1
                 try:
@@ -189,7 +189,7 @@ class TuNiuApi:
                     item.district = temp.get("data").get("hotel").get("districtName")
                     sess2.commit()
                 except AttributeError as e:
-                    print(hotel_id , e)
+                    print(hotel_id, e)
                     if "list" in str(e):
                         continue
                     else:
@@ -197,7 +197,7 @@ class TuNiuApi:
                 print(temp.get("data").get("hotel").get("tel"))
                 # time.sleep(3)
 
-    def sub_get_phone(self,hotel_id):
+    def sub_get_phone(self, hotel_id):
         url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-08-1&checkoutdate=2019-08-02"
         with session_scope() as sess2:
             tn = sess2.query(TuNiu).filter(TuNiu.phone == None).all()
@@ -232,4 +232,4 @@ if __name__ == "__main__":
             break
         except Exception as e:
             print("输验证码 {}".format(e))
-            time.sleep(2*3600)
+            time.sleep(2 * 3600)
