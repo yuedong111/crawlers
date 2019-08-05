@@ -24,6 +24,7 @@ class TuNiuApi:
         self.session = create_tuniu_session()
         self.city = {}
         self.status = False
+        self.city_status = False
         self.start_time = time.time()
         with open("config.json", "r", encoding="utf-8") as f:
             lj = json.load(f)
@@ -74,8 +75,6 @@ class TuNiuApi:
     def get_all_data(self, cid, city):
         page = 1
         today = datetime.date.today()
-        if city != self.current_city:
-            return
         while True:
             if city == self.current_city and page == self.current_page:
                 self.status = True
@@ -128,7 +127,7 @@ class TuNiuApi:
 
     def get_data(self):
         page = 5
-        url = "http://hotel.tuniu.com/ajax/list?search%5BcityCode%5D=300&search%5BcheckInDate%5D=2019-8-6&search%5BcheckOutDate%5D=2019-8-7&search%5Bkeyword%5D=&suggest=&sort%5Bfirst%5D%5Bid%5D=recommend&sort%5Bfirst%5D%5Btype%5D=&sort%5Bsecond%5D=&sort%5Bthird%5D=cash-back-after&page={}&returnFilter=0"
+        url = "http://hotel.tuniu.com/ajax/list?search%5BcityCode%5D=300&search%5BcheckInDate%5D={tomorrow}&search%5BcheckOutDate%5D={aftert}&search%5Bkeyword%5D=&suggest=&sort%5Bfirst%5D%5Bid%5D=recommend&sort%5Bfirst%5D%5Btype%5D=&sort%5Bsecond%5D=&sort%5Bthird%5D=cash-back-after&page={}&returnFilter=0"
         while True:
             print("the page is {}".format(page))
             r = self.session.get(url.format(page))
@@ -166,9 +165,10 @@ class TuNiuApi:
             time.sleep(0.5)
 
     def get_phone(self):
-        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate=2019-08-1&checkoutdate=2019-08-02"
+        url = "http://hotel.tuniu.com/ajax/getHotelStaticInfo?id={}&checkindate={tomorrow}&checkoutdate={aftert}"
         count = 1
         # res = []
+        today = datetime.date.today()
         with session_scope() as sess2:
             tn = sess2.query(TuNiu).filter(TuNiu.phone == None).all()
             for item in tn:
@@ -183,7 +183,8 @@ class TuNiuApi:
                 #             print(item)
                 # except KeyboardInterrupt:
                 #     exit(0)
-                r = self.session.get(url.format(hotel_id))
+                r = self.session.get(url.format(hotel_id, tomorrow=today + datetime.timedelta(days=1),
+                                                aftert=today + datetime.timedelta(days=2)))
                 # count = count + 1
                 try:
                     temp = r.json()
@@ -224,7 +225,10 @@ class TuNiuApi:
         self.parse_city()
         for key in self.city.keys():
             if key != 300:
-                sa = self.get_all_data(key, self.city[key])
+                if self.city[key] == self.current_city:
+                    self.city_status = True
+                if self.city_status:
+                    sa = self.get_all_data(key, self.city[key])
 
 
 if __name__ == "__main__":
