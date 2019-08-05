@@ -14,10 +14,10 @@ from jiehun_meishi import parse_jiehun_item, parse_meishi_item
 from meituanpeixun import parse_peixun
 
 url_map = {
-    # "life": "https://cq.meituan.com/shenghuo/pn{}/",
-    # "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
-    # "meishi": "https://cq.meituan.com/meishi/pn{}/",
-    # "jiankangliren": "https://cq.meituan.com/jiankangliren/pn{}/",
+    "life": "https://cq.meituan.com/shenghuo/pn{}/",
+    "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
+    "meishi": "https://cq.meituan.com/meishi/pn{}/",
+    "jiankangliren": "https://cq.meituan.com/jiankangliren/pn{}/",
     "jiehun": "https://cq.meituan.com/jiehun/pn{}/",
     "qinzi": "https://cq.meituan.com/qinzi/pn{}/",
     "yundong": "https://cq.meituan.com/yundongjianshen/pn{}/",
@@ -26,7 +26,7 @@ url_map = {
     "jiaoyupeixun": "https://cq.meituan.com/xuexipeixun/pn{}/"
 }
 
-hotel_url = "https://ihotel.meituan.com/hbsearch/HotelSearch?utm_medium=pc&version_name=999.9&cateId=20&attr_28=129&uuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258%401562656719051&cityId=45&offset={}&limit=20&startDay=20191108&endDay=20200108&q=&sort=defaults&X-FOR-WITH=c0dGLE3siaNf6WANtDItcccQMpQvbJuHHXiSyb7dP6m2wrWAH9gtxqbHsOreGP5zCtGc3QfExeVZqpNhptxz%2F4GSYcf6XcJfaYhBt4PRoOvn4MvIuqvPMq1PsVCWsxXgDy3qFLJNM4b6nfIf6pX5og%3D%3D"
+hotel_url = "https://ihotel.meituan.com/hbsearch/HotelSearch?utm_medium=pc&version_name=999.9&cateId=20&attr_28=129&uuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258%401562656719051&cityId=45&offset={}&limit=20&startDay=20190908&endDay=20190910&q=&sort=defaults&X-FOR-WITH=c0dGLE3siaNf6WANtDItcccQMpQvbJuHHXiSyb7dP6m2wrWAH9gtxqbHsOreGP5zCtGc3QfExeVZqpNhptxz%2F4GSYcf6XcJfaYhBt4PRoOvn4MvIuqvPMq1PsVCWsxXgDy3qFLJNM4b6nfIf6pX5og%3D%3D"
 hotel_detail = "https://hotel.meituan.com/{}/"
 session = create_meituan_session()
 driver = create_webdriver()
@@ -348,18 +348,24 @@ def start():
                 div = soup.find("div", {"class": "filter-box"})
                 if not div:
                     # print(r.text.find("龙湖新壹街店"))
-                    div = soup.find_all("div", class_="tag-group tag-group-expend")[0]
-                    ds = div.find_all("div")
-                    for item in ds:
-                        a = item.a
-                        if a:
-                            if a.get("href") and a.get("href").startswith("//"):
-                                d_u = "https:" + a.get("href") + "pn{}/"
-                                # ares = a.text.strip()
-                                try:
-                                    total_pages(d_u)
-                                except Exception as e:
-                                    print(e)
+                    try:
+                        div = soup.find_all("div", class_="tag-group tag-group-expend")
+                        if not div:
+                            raise Exception("没有找到 {}".format(url_map[item].format(1)))
+                        div = div[0]
+                        ds = div.find_all("div")
+                        for item in ds:
+                            a = item.a
+                            if a:
+                                if a.get("href") and a.get("href").startswith("//"):
+                                    d_u = "https:" + a.get("href") + "pn{}/"
+                                    # ares = a.text.strip()
+                                    try:
+                                        total_pages(d_u)
+                                    except Exception as e:
+                                        print(e)
+                    except Exception as e:
+                        print(e)
                 else:
                     mas = div.find_all("a")
                     for ite in mas:
