@@ -74,6 +74,8 @@ class TuNiuApi:
     def get_all_data(self, cid, city):
         page = 1
         today = datetime.date.today()
+        if city != self.current_city:
+            return
         while True:
             if city == self.current_city and page == self.current_page:
                 self.status = True
@@ -222,7 +224,7 @@ class TuNiuApi:
         self.parse_city()
         for key in self.city.keys():
             if key != 300:
-                self.get_all_data(key, self.city[key])
+                sa = self.get_all_data(key, self.city[key])
 
 
 if __name__ == "__main__":
