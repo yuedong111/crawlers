@@ -13,7 +13,7 @@ class WG:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "fuzhou/pn6"
+        self.jump = "foshan/pn51"
         self.status = False
 
     def parse_page(self, url, area):
@@ -64,29 +64,35 @@ class WG:
         time.sleep(0.5)
         print("detail {}".format(url))
         res = {}
-        self.session.headers["Cookie"] = "Hm_lvt_908376e0e856e8b64f7af6081984a5d1=1564708800; Hm_lpvt_908376e0e856e8b64f7af6081984a5d1=1564710060"
-        r = self.session.get(url, timeout=5)
+        self.session.headers["Cookie"] = "Hm_lvt_908376e0e856e8b64f7af6081984a5d1=1564651662,1564966733; Hm_lpvt_908376e0e856e8b64f7af6081984a5d1=1564968718"
+        try:
+            r = self.session.get(url)
+        except:
+            r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         cname = soup.find("div", {"id": "logoi"}).text.strip()
         index = cname.find("http")
         cname = cname[:index].strip()
         tda = soup.find("td", {"id": "side"})
-        sc = tda.find_all("div", class_="sidekcontent")
-        for ds in sc:
-            if ds.previous_sibling and ds.previous_sibling.previous_sibling.div.text.strip() == cname:
-                divsc = ds
-                lis = divsc.find_all("li")
-                tem = ''
-                for item in lis:
-                    if "地址" in item.text:
-                        res["address"] = item.text
-                    else:
-                        tem = tem + item.text + " "
-                res["phone"] = tem
+        try:
+            sc = tda.find_all("div", class_="sidekcontent")
+            for ds in sc:
+                if ds.previous_sibling and ds.previous_sibling.previous_sibling.div.text.strip() == cname:
+                    divsc = ds
+                    lis = divsc.find_all("li")
+                    tem = ''
+                    for item in lis:
+                        if "地址" in item.text:
+                            res["address"] = item.text
+                        else:
+                            tem = tem + item.text + " "
+                    res["phone"] = tem
+        except Exception as e:
+            print(e)
         divs = soup.find_all("div", class_="mainkcontent")
         content = divs[0].find("div", class_="content")
         if content:
-            res["about"] = content.text
+            res["about"] = content.text.encode("gbk", errors="ignore").decode("gbk")
         div = divs[-1]
         tds = div.find_all("td")
         temp = {}
