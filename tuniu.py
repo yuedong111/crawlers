@@ -12,16 +12,19 @@ import time
 from utils.models import TuNiu, TuNiuAll
 from concurrent import futures
 import traceback
+import datetime
 
 
 class TuNiuApi:
     # session = create_tuniu_session()
-    url = "https://hotel.tuniu.com/ajax/list?search%5Bcity%5D={cid}&search%5BcheckInDate%5D=2019-8-3&search%5BcheckOutDate%5D=2019-8-4&search%5BcityCode%5D={cid}&page={page}"
+    url = "https://hotel.tuniu.com/ajax/list?search%5Bcity%5D={cid}&search%5BcheckInDate%5D={tomorrow}&search%5BcheckOutDate%5D={aftert}&search%5BcityCode%5D={cid}&page={page}"
     url_home = "https://hotel.tuniu.com"
 
     def __init__(self):
         self.session = create_tuniu_session()
         self.city = {}
+        today = datetime.date.today()
+        self.url = self.url.format(tomorrow=today+datetime.timedelta(days=1), aftert=today+datetime.timedelta(days=2))
         self.status = False
         self.start_time = time.time()
         with open("config.json", "r", encoding="utf-8") as f:
@@ -123,11 +126,12 @@ class TuNiuApi:
 
     def get_data(self):
         page = 5
-        url = "http://hotel.tuniu.com/ajax/list?search%5BcityCode%5D=300&search%5BcheckInDate%5D=2019-8-4&search%5BcheckOutDate%5D=2019-8-5&search%5Bkeyword%5D=&suggest=&sort%5Bfirst%5D%5Bid%5D=recommend&sort%5Bfirst%5D%5Btype%5D=&sort%5Bsecond%5D=&sort%5Bthird%5D=cash-back-after&page={}&returnFilter=0"
+        url = "http://hotel.tuniu.com/ajax/list?search%5BcityCode%5D=300&search%5BcheckInDate%5D=2019-8-6&search%5BcheckOutDate%5D=2019-8-7&search%5Bkeyword%5D=&suggest=&sort%5Bfirst%5D%5Bid%5D=recommend&sort%5Bfirst%5D%5Btype%5D=&sort%5Bsecond%5D=&sort%5Bthird%5D=cash-back-after&page={}&returnFilter=0"
         while True:
             print("the page is {}".format(page))
             r = self.session.get(url.format(page))
             r.encoding = "utf-8"
+            print(r.json())
             temp = r.json().get("data")
             try:
                 total = temp.get("total")
@@ -228,4 +232,4 @@ if __name__ == "__main__":
             break
         except Exception as e:
             print("输验证码 {}".format(e))
-            time.sleep(2)
+            time.sleep(2*3600)
