@@ -29,7 +29,10 @@ def begin(place):
         load = driver.find_elements_by_xpath('//*[@id="loading"]/div')
         if load:
             load = load[0]
-            load.click()
+            try:
+                load.click()
+            except Exception as e:
+                print("shouci jiazai {}".format(e))
         else:
             print("点击次数 {}".format(count))
             driver.get("https://waimai.meituan.com/home/{}".format(place))
@@ -39,7 +42,10 @@ def begin(place):
                 for _ in range(total):
                     load = driver.find_elements_by_xpath('//*[@id="loading"]/div')
                     if load:
-                        load[0].click()
+                        try:
+                            load[0].click()
+                        except Exception as e:
+                            print(e)
                     time.sleep(2)
             r = driver.page_source
             sta = parse_item(driver, r, place, count)
@@ -136,19 +142,19 @@ def get_3kilo_neighor(place):
 
 
 quxian = {
-    "垫江县": "wm5v5j3xgx0k",
-    "shapingba": "wm78ndvhcgfz",
-    "dazuqu": "wm71jcj56mgm",
-    "hechuan": "wm7dd92ed9vz",
-    "tongliang": "wm73vd15cd6s",
-    "tongnan": "wm77b978p5w8",
-    "yongchuan": "wmhh9qc58mke",
-    "chengkou": "wmtmbbumbpd7",
-    "fuling": "wmk35b7tjfxs",
-    "changshou": "wmk1uu6z879g",
-    "bishan": "wm783khyg7s7",
-    "banan": "wm5z299kz8cu",
-    "xiushan": "wmj9bs17p87s",
+    # "垫江县": "wm5v5j3xgx0k",
+    # "shapingba": "wm78ndvhcgfz",
+    # "dazuqu": "wm71jcj56mgm",
+    # "hechuan": "wm7dd92ed9vz",
+    # "tongliang": "wm73vd15cd6s",
+    # "tongnan": "wm77b978p5w8",
+    # "yongchuan": "wmhh9qc58mke",
+    # "chengkou": "wmtmbbumbpd7",
+    # "fuling": "wmk35b7tjfxs",
+    # "changshou": "wmk1uu6z879g",
+    # "bishan": "wm783khyg7s7",
+    # "banan": "wm5z299kz8cu",
+    # "xiushan": "wmj9bs17p87s",
     "pengshui": "wmhyttbd15xy",
     "wanzhou": "wmmp713y3e7q",
     "nanchuan": "wmhjv7wtb36j",
@@ -193,6 +199,7 @@ def start(start_place):
 
 def craw():
     for item in quxian.keys():
+        print("in {}".format(item))
         start(quxian.get(item))
 
 
