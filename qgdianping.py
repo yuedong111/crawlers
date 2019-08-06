@@ -117,7 +117,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "alashan/ch55"
+        self.jump = "anshan/ch10"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -338,7 +338,12 @@ class DianPing:
                             time.sleep(0.5)
                             count = count + 1
         elif "hotel" in url:
+            self.session.headers["Cookie"] = """navCtgScroll=0; _hc.v="\"85fd17cf-fdb1-490d-9e4e-2b7090d0ae6c.1562822672\""; _lxsdk_cuid=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; _lxsdk=16c22ac17a87c-0b6f1684f738ee-36664c08-1fa400-16c22ac17a9c8; s_ViewType=10; aburl=1; Hm_lvt_4c4fc10949f0d691f3a2cc4ca5065397=1564034271; cy=57; cye=alashan; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1563950118,1564112965,1564448583,1565075956; wed_user_path=1040|0; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; Hm_lpvt_dbeeb675516927da776beeb1d9802bd4=1565076978; cityInfo=%7B%22cityId%22%3A57%2C%22cityName%22%3A%22%E9%98%BF%E6%8B%89%E5%96%84%22%2C%22provinceId%22%3A0%2C%22parentCityId%22%3A0%2C%22cityOrderId%22%3A0%2C%22isActiveCity%22%3Afalse%2C%22cityEnName%22%3A%22alashan%22%2C%22cityPyName%22%3Anull%2C%22cityAreaCode%22%3Anull%2C%22cityAbbrCode%22%3Anull%2C%22isOverseasCity%22%3Afalse%2C%22isScenery%22%3Afalse%2C%22TuanGouFlag%22%3A0%2C%22cityLevel%22%3A0%2C%22appHotLevel%22%3A0%2C%22gLat%22%3A0%2C%22gLng%22%3A0%2C%22directURL%22%3Anull%2C%22standardEnName%22%3Anull%7D; lastVisitUrl=%2Falashan%2Fhotel%2Fr103579; selectLevel=%7B%7D; _lxsdk_s=16c65c0d922-e1a-bd4-95%7C%7C1890"""
+            r = self.session.get(url)
+            soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", class_="type area")
+            if not div:
+                div = soup.find("div", class_="nav")
             div = div.find("div", class_="sub-filter-region-wrapper")
             ma = div.find_all("a")
             for a in ma:
@@ -352,25 +357,34 @@ class DianPing:
                         time.sleep(0.5)
         elif "ch70" in url:
             li = soup.find("li", class_="t-item-box t-district J_li")
-            div = li.find("div", class_="t-list")
-            mli = li.find_all("a")
-            for a in mli:
-                if a.get("href") and a.get("href").startswith("/"):
-                    if a.get("href") == "/chongqing/ch70":
-                        qdurl = "http://www.dianping.com" + a.get("href") + "/p{}"
-                    else:
-                        qdurl = "http://www.dianping.com" + a.get("href") + "p{}"
-                    count = 1
-                    while count < 51:
-                        url1 = qdurl.format(count)
-                        time.sleep(0.5)
-                        try:
-                            print(url1)
-                            self.page_item(url1, a.text, locate)
-                            count = count + 1
-                        except Exception as e:
-                            print(e)
-                            break
+            if not li:
+                j_u = url+"/p{}"
+                count = 1
+                while count < 51:
+                    jiehun_url = j_u.format(count)
+                    self.parse_jiehun(jiehun_url, locate, locate)
+                    time.sleep(0.5)
+                    count = count + 1
+            else:
+                div = li.find("div", class_="t-list")
+                mli = li.find_all("a")
+                for a in mli:
+                    if a.get("href") and a.get("href").startswith("/"):
+                        if a.get("href") == "/chongqing/ch70":
+                            qdurl = "http://www.dianping.com" + a.get("href") + "/p{}"
+                        else:
+                            qdurl = "http://www.dianping.com" + a.get("href") + "p{}"
+                        count = 1
+                        while count < 51:
+                            url1 = qdurl.format(count)
+                            time.sleep(0.5)
+                            try:
+                                print(url1)
+                                self.page_item(url1, a.text, locate)
+                                count = count + 1
+                            except Exception as e:
+                                print(e)
+                                break
         elif "ch90" in url:
             div = soup.find("div", {"id": "J_shopsearch"})
             div = div.find_all("div", class_="row")[1]
@@ -485,7 +499,10 @@ class DianPing:
             if div:
                 span = div.find("span")
                 if span.get("class"):
-                    score = float(int(span["class"][-1][-2:]) / 10)
+                    try:
+                        score = float(int(span["class"][-1][-2:]) / 10)
+                    except:
+                        score = 0
                     res["score"] = score
             data_poi = li.get("data-poi")
             hotel_url = "http://www.dianping.com/shop/" + data_poi
@@ -520,13 +537,17 @@ class DianPing:
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            DianPing().start()
-            time.sleep(600)
-        except Exception as e:
-            print(traceback.print_exc())
-            time.sleep(1800)
+    try:
+        DianPing().start()
+    except Exception as e:
+        print(traceback.print_exc())
+    # while True:
+    #     try:
+    #         DianPing().start()
+            # time.sleep(600)
+        # except Exception as e:
+        #     print(traceback.print_exc())
+            # time.sleep(1800)
 
 
 
