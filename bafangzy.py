@@ -82,7 +82,7 @@ class BaFZY:
 
     def detail(self, url):
         print(url)
-        time.sleep(0.5)
+        time.sleep(0.7)
         res = {}
         res["url"] = url
         r = self.session.get(url)
@@ -90,7 +90,10 @@ class BaFZY:
         div = soup.find("div", class_="Cneirong")
         if div:
             about = div.find("ul", class_="Cgsjj")
-            res["about"] = about.next_sibling.text
+            if hasattr(about.next_sibling, "text"):
+                res["about"] = about.next_sibling.text
+            else:
+                res["about"] = about.text
             temp = div.find("dl", class_="codl")
             dds = temp.find_all("dd")
             people = dds[2].text
@@ -110,7 +113,7 @@ class BaFZY:
                             deal.append(item1.text)
                 for item in range(0, len(deal), 2):
                     item1 = deal[item]
-                    res[item1] = deal[item+1]
+                    res[item1] = deal[item + 1]
             res = dict([(k, v) for k, v in res.items() if v])
         else:
             li = soup.find("li", class_="CHOME")
@@ -125,7 +128,7 @@ class BaFZY:
                     temp.append(item.text)
             for item in range(0, len(temp), 2):
                 item1 = temp[item]
-                res[item1] = temp[item+1]
+                res[item1] = temp[item + 1]
             res = {k: v for k, v in res.items() if v}
             lis = soup.find_all("li", class_="x4")
             for li in lis:
@@ -154,12 +157,5 @@ class BaFZY:
         return res
 
 
-
-
-
-
-
-
-# BaFZY().p_list("https://www.b2b168.com/chongqingqiye/wanzhouqu/gaosuntangjiedao/")
-# BaFZY().detail("http://qiqiqi521.b2b168.com/home.aspx")
-BaFZY().get_cate()
+if __name__ == "__main__":
+    BaFZY().get_cate()
