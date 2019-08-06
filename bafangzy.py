@@ -6,6 +6,20 @@ from utils.models import BFZY
 from utils.sqlbackends import session_scope
 import re
 import json
+from requests.exceptions import ConnectionError
+
+def reconnect(fn):
+
+    def decorete(*args, **kwargs):
+        while True:
+            try:
+                res = fn(*args, **kwargs)
+                break
+            except ConnectionError:
+                print("重连 {}".format(kwargs.get("url")))
+                time.sleep(2)
+        return res
+    return decorete
 
 
 class BaFZY:
@@ -14,7 +28,7 @@ class BaFZY:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "yuzhongqu/qixinggangjiedao/l-1.html"
+        self.jump = "shapingbaqu/huxijiedao/l-1.html"
         self.status = False
 
     def get_cate(self):
@@ -52,6 +66,7 @@ class BaFZY:
             self.p_list(d_u, area)
             count += 1
 
+    @reconnect
     def p_list(self, url, area):
         print("page url {}".format(url))
         r = self.session.get(url)
