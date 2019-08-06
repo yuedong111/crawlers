@@ -14,7 +14,7 @@ class BaFZY:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "fulingqu/damuxiang/l-1.html"
+        self.jump = "yuzhongqu/qixinggangjiedao/l-1.html"
         self.status = False
 
     def get_cate(self):
@@ -155,11 +155,12 @@ class BaFZY:
                 res["others"].update({key: res[key]})
                 res.pop(key)
         res["others"] = json.dumps(res["others"])
-        tem = res["about"].split("；")
-        for item in tem:
-            t = item.split("：")
-            if "注册资金" in t[0]:
-                res["registeredFunds"] = t[1]
+        if "about" in res:
+            tem = res["about"].split("；")
+            for item in tem:
+                t = item.split("：")
+                if "注册资金" == t[0]:
+                    res["registeredFunds"] = t[1]
         return res
 
 
