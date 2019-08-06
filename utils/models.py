@@ -91,7 +91,7 @@ class XieCheng(Base):
     url = Column(String(128), index=True)
 
 
-class DZDianPing(Base):
+class DZDianPingCQ(Base):
     __tablename__ = "dazhongdianping"
     id = Column(Integer, autoincrement=True, primary_key=True)
     shop = Column(String(200))
@@ -102,6 +102,18 @@ class DZDianPing(Base):
     phone = Column(String(66))
     openTime = Column(String(66))
 
+
+class DZDianPing(Base):
+    __tablename__ = "dianping"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    shop = Column(String(200))
+    address = Column(String(200))
+    area = Column(String(20))
+    locate = Column(String(32))
+    score = Column(String(10))
+    url = Column(String(128), index=True)
+    phone = Column(String(66))
+    openTime = Column(String(66))
 
 class TuNiuAll(Base):
     __tablename__ = "tuniuquanguo"
