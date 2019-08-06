@@ -75,7 +75,7 @@ class WaiMai(Base):
     shop = Column(String(200), index=True)
     openTime = Column(String(256))
     address = Column(String(512))
-    about = Column(String(888))
+    about = Column(String(999))
     score = Column(String(32))
     url = Column(String(128), index=True)
     geoArea = Column(String(20))
@@ -103,6 +103,21 @@ class DZDianPing(Base):
     openTime = Column(String(66))
 
 
+class TuNiuAll(Base):
+    __tablename__ = "tuniuquanguo"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    shop = Column(String(200))
+    address = Column(String(200))
+    city = Column(String(12))
+    area = Column(String(128))
+    phone = Column(String(66))
+    district = Column(String(20))
+    score = Column(String(10))
+    url = Column(String(128), index=True)
+    price = Column(String(10))
+    decorateYear = Column(String(10))
+
+
 class TuNiu(Base):
     __tablename__ = "tuniu"
     id = Column(Integer, autoincrement=True, primary_key=True)
@@ -124,7 +139,7 @@ class ShunQi(Base):
     address = Column(String(228))
     products = Column(String(528))
     area = Column(String(32))
-    representative = Column(String(12))
+    representative = Column(String(40))
     establishedTime = Column(String(22))
     url = Column(String(66), index=True)
     postCodes = Column(String(10))
@@ -141,14 +156,32 @@ class ShunQi(Base):
 class WGQY(Base):
     __tablename__ = "wanguoqiye"
     id = Column(Integer, autoincrement=True, primary_key=True)
-    enterpriseName = Column(String(64), index=True)
+    enterpriseName = Column(String(100), index=True)
+    address = Column(String(256))
     primaryBusiness = Column(String(128))
-    phone = Column(String(64))
-    url = Column(String(48))
+    phone = Column(String(128))
+    url = Column(String(80))
     establishedTime = Column(String(22))
     registeredFunds = Column(String(64))
-    category = Column(String(128))
+    location = Column(String(36))
+    category = Column(String(188))
     about = Column(LONGTEXT)
+
+
+class BFZY(Base):
+    __tablename__ = "bafangziyuanchongqing"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    area = Column(String(32))
+    phone = Column(String(48))
+    representative = Column(String(40))
+    establishedTime = Column(String(22))
+    url = Column(String(66), index=True)
+    registeredFunds = Column(String(64))
+    updateTime = Column(String(22))
+    about = Column(LONGTEXT)
+    others = Column(LONGTEXT)
 
 
 Base.metadata.create_all(mysql_client)

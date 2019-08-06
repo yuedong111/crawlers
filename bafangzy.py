@@ -1,0 +1,165 @@
+# -*- coding: utf-8 -*-
+from bs4 import BeautifulSoup
+from utils.make_sessions import create_session
+import time
+from utils.models import BFZY
+from utils.sqlbackends import session_scope
+import re
+import json
+
+
+class BaFZY:
+    url = "https://www.b2b168.com/chongqingqiye/"
+    fpa = re.compile(r"\d+")
+
+    def __init__(self):
+        self.session = create_session()
+        self.jump = "baoding/pn10"
+        self.status = False
+
+    def get_cate(self):
+        r = self.session.get(self.url)
+        soup = BeautifulSoup(r.text, "lxml")
+        sdiv = soup.find("div", class_="subNav")
+        area = sdiv.text.split()[-1]
+        area = area.strip()[:-2]
+        div = soup.find("div", class_="mach_list clearfix")
+        dls = div.find_all("dl")
+        for item in dls:
+            mas = item.find_all("a")
+            cate = mas[0].get("title")
+            area = cate[:-2]
+            for a in mas[1:]:
+                c_u = "https://www.b2b168.com" + a.get("href")
+                self.total_pages(c_u, area)
+                # print(c_u)
+
+    def total_pages(self, url, area):
+        r = self.session.get(url)
+        soup = BeautifulSoup(r.text, "lxml")
+        div = soup.find("div", class_="pages")
+        res = self.fpa.findall(div.text)
+        total_pages = int(res[0])
+        count = 1
+        while count < total_pages + 1:
+            lurl = url + "l-{}.html"
+            d_u = lurl.format(count)
+            # if self.jump in d_u:
+            #     self.status = True
+            # if not self.status:
+            #     count = count + 1
+            #     continue
+            self.p_list(d_u, area)
+            count += 1
+
+    def p_list(self, url, area):
+        r = self.session.get(url)
+        soup = BeautifulSoup(r.text, "lxml")
+        ul = soup.find("ul", class_="list")
+        mas = ul.find_all("a")
+        for a in mas:
+            res = {}
+            res["area"] = area
+            name = a.get("title")
+            res["enterpriseName"] = name
+            if not a.get("href").startswith("http"):
+                d_u = "https:" + a.get("href")
+            else:
+                d_u = a.get("href")
+            res["url"] = d_u
+            temp = a.next_sibling.next_sibling
+            font = temp.find("font")
+            if font:
+                res["updateTime"] = font.text
+            with session_scope() as sess:
+                wgs = sess.query(BFZY).filter(BFZY.url == d_u).first()
+                if not wgs:
+                    resu = self.detail(d_u)
+                    res.update(resu)
+                    wg = BFZY(**res)
+                    sess.add(wg)
+                    print(res)
+
+    def detail(self, url):
+        print(url)
+        time.sleep(0.5)
+        res = {}
+        res["url"] = url
+        r = self.session.get(url)
+        soup = BeautifulSoup(r.text, "lxml")
+        div = soup.find("div", class_="Cneirong")
+        if div:
+            about = div.find("ul", class_="Cgsjj")
+            res["about"] = about.next_sibling.text
+            temp = div.find("dl", class_="codl")
+            dds = temp.find_all("dd")
+            people = dds[2].text
+            res["address"] = dds[0].text
+            res["representative"] = people
+            phone = dds[3].text
+            res["phone"] = phone
+            home_url = dds[-1].text
+            res["homePage"] = home_url
+            primarys = div.find_all("ul", class_="cgsxx")
+            for primary in primarys:
+                trs = primary.find_all("tr")
+                deal = []
+                for item in trs:
+                    for item1 in item:
+                        if hasattr(item1, "text"):
+                            deal.append(item1.text)
+                for item in range(0, len(deal), 2):
+                    item1 = deal[item]
+                    res[item1] = deal[item+1]
+            res = dict([(k, v) for k, v in res.items() if v])
+        else:
+            li = soup.find("li", class_="CHOME")
+            if li:
+                about = li.text.strip()
+                res["about"] = about
+            uls = soup.find_all("ul", class_="box-rightsidebar3")
+            temp = []
+            for ul in uls:
+                tds = ul.find_all("td")
+                for item in tds:
+                    temp.append(item.text)
+            for item in range(0, len(temp), 2):
+                item1 = temp[item]
+                res[item1] = temp[item+1]
+            res = {k: v for k, v in res.items() if v}
+            lis = soup.find_all("li", class_="x4")
+            for li in lis:
+                if hasattr(li, "text"):
+                    if "所在地区" in li.text:
+                        dd = ""
+                        mas = li.find_all("a")
+                        for a in mas:
+                            dd = dd + a.text + " "
+                        res["address"] = dd
+        res["others"] = {}
+        for key in list(res.keys()):
+            if "法人代表或负责" in key:
+                res["representative"] = res[key]
+                res.pop(key)
+            elif "成立时间" in key:
+                res["establishedTime"] = res[key]
+                res.pop(key)
+            elif "注册资金" in key:
+                res["registeredFunds"] = res[key]
+                res.pop(key)
+            elif key not in ["others", "url", "about", "representative", "establishedTime", "address", "phone"]:
+                res["others"].update({key: res[key]})
+                res.pop(key)
+        res["others"] = json.dumps(res["others"])
+        return res
+
+
+
+
+
+
+
+
+# BaFZY().p_list("https://www.b2b168.com/chongqingqiye/wanzhouqu/gaosuntangjiedao/")
+# BaFZY().detail("http://qiqiqi521.b2b168.com/home.aspx")
+BaFZY().get_cate()
