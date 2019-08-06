@@ -14,7 +14,7 @@ class BaFZY:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "baoding/pn10"
+        self.jump = "fulingqu/damuxiang/l-1.html"
         self.status = False
 
     def get_cate(self):
@@ -44,15 +44,16 @@ class BaFZY:
         while count < total_pages + 1:
             lurl = url + "l-{}.html"
             d_u = lurl.format(count)
-            # if self.jump in d_u:
-            #     self.status = True
-            # if not self.status:
-            #     count = count + 1
-            #     continue
+            if self.jump in d_u:
+                self.status = True
+            if not self.status:
+                count = count + 1
+                continue
             self.p_list(d_u, area)
             count += 1
 
     def p_list(self, url, area):
+        print("page url {}".format(url))
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find("ul", class_="list")
@@ -154,6 +155,11 @@ class BaFZY:
                 res["others"].update({key: res[key]})
                 res.pop(key)
         res["others"] = json.dumps(res["others"])
+        tem = res["about"].split("；")
+        for item in tem:
+            t = item.split("：")
+            if "注册资金" in t[0]:
+                res["registeredFunds"] = t[1]
         return res
 
 
