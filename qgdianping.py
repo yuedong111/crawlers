@@ -60,7 +60,7 @@ def yanzhengma_warning(fn):
                 res = fn(*args, **kwargs)
                 break
             except Exception as e:
-                print("输入验证码 {}{}".format(kwargs.get("url"), e))
+                print("输入验证码 {}{}".format(kwargs.get("url"), traceback.print_exc()))
                 time.sleep(2)
         return res
     return decorete
@@ -117,7 +117,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "ch75/c2290"
+        self.jump = "alashan/ch55"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -303,32 +303,40 @@ class DianPing:
     @yanzhengma_warning
     def parse_cate(self, url, locate):
         print(url)
-        # if self.jump in url:
-        #     self.status = True
-        # if not self.status:
-        #     continue
+        if self.jump in url:
+            self.status = True
+        if not self.status:
+            return
         r = self.session.get(url)
-        # with open("test.html", 'w', encoding="utf-8") as f:
-        # f.write(r.text)
         soup = BeautifulSoup(r.text, "lxml")
         if "ch55" in url:
             li = soup.find("li", class_="t-item-box t-district J_li")
-            div = li.find("div", class_="t-list")
-            lis = div.find_all("li")
-            for item in lis:
-                a = item.find("a")
-                if a.get("href"):
-                    url = self.url_home + a["href"] + "p{}"
-                    count = 1
-                    while count < 51:
-                        jiehun_url = url.format(count)
-                        print(jiehun_url)
-                        if hasattr(a, "text"):
-                            self.parse_jiehun(jiehun_url, a.text, locate)
-                        else:
-                            self.parse_jiehun(jiehun_url, "未知", locate)
-                        time.sleep(0.5)
-                        count = count + 1
+            if not li:
+                j_u = url+"/p{}"
+                count = 1
+                while count < 51:
+                    jiehun_url = j_u.format(count)
+                    print(jiehun_url)
+                    self.parse_jiehun(jiehun_url, locate, locate)
+                    time.sleep(0.5)
+                    count = count + 1
+            else:
+                div = li.find("div", class_="t-list")
+                lis = div.find_all("li")
+                for item in lis:
+                    a = item.find("a")
+                    if a.get("href"):
+                        url = self.url_home + a["href"] + "p{}"
+                        count = 1
+                        while count < 51:
+                            jiehun_url = url.format(count)
+                            print(jiehun_url)
+                            if hasattr(a, "text"):
+                                self.parse_jiehun(jiehun_url, a.text, locate)
+                            else:
+                                self.parse_jiehun(jiehun_url, "未知", locate)
+                            time.sleep(0.5)
+                            count = count + 1
         elif "hotel" in url:
             div = soup.find("div", class_="type area")
             div = div.find("div", class_="sub-filter-region-wrapper")
@@ -386,10 +394,6 @@ class DianPing:
             manya = div.find_all("a")
             for a in manya:
                 if a.get("href"):
-                    # if self.jump in a.get("href"):
-                    #     self.status = True
-                    # if not self.status:
-                    #     continue
                     count = 1
                     while count < 51:
                         url = a["href"] + "p{}".format(count)
@@ -508,7 +512,7 @@ class DianPing:
         for city in self.parse_city():
             if city[0] != "chongqing":
                 for item in item_city:
-                    self.parse_cate(item_city[item].format(city[0]), city[1])
+                    ss = self.parse_cate(item_city[item].format(city[0]), city[1])
 
     def __del__(self):
         # self.browser.quit()
