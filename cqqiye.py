@@ -204,4 +204,4 @@ if __name__ == "__main__":
         nowt = time.asctime(time.localtime(time.time()))
         print(nowt)
         print("wait 1 minites")
-        time.sleep(60)
+        time.sleep(60*60)
