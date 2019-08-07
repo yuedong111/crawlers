@@ -60,7 +60,7 @@ def yanzhengma_warning(fn):
                 res = fn(*args, **kwargs)
                 break
             except Exception as e:
-                print("输入验证码 {}{}{}".format(kwargs.get("url"), *args, traceback.print_exc()))
+                print("输入验证码 {}{}{}".format(kwargs.get("url"), args, traceback.print_exc()))
                 time.sleep(2)
         return res
     return decorete
