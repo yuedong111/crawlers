@@ -35,13 +35,16 @@ def check_proxy(func):
 
 def second_run(func):
     def decorate(*args, **kwargs):
-        try:
-            res = func(*args, **kwargs)
-        except:
-            time.sleep(2)
-            res = func(*args, **kwargs)
+        while True
+            try:
+                res = func(*args, **kwargs)
+                break
+            except:
+                time.sleep(2)
+                print("run again {}".format(args))
+                res = func(*args, **kwargs)
+                break
         return res
-
     return decorate
 
 
