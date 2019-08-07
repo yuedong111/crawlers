@@ -393,6 +393,8 @@ class DianPing:
                 a = item.a
                 if a:
                     d_u = "http:" + a.get("href") + "p{}"
+                    if "javascript:" in a.get("href"):
+                        continue
                     count = 1
                     while count < 51:
                         time.sleep(0.5)
