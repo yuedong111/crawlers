@@ -7,13 +7,14 @@ import time
 from utils.models import ShunQi
 from utils.sqlbackends import session_scope
 import random
+import traceback
 
 
 class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = "chengkou/pn10"
+        self.jump = "wulong/yajiangzhen/pn7"
         self.status = False
         self.session = create_shunqi_session()
 
@@ -55,11 +56,17 @@ class ShunQiCrawl:
 
     def total_pages(self, url, area):
         self.session.headers["Host"] = "chongqing.11467.com"
+        self.session.headers[
+            "Cookie"] = "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085,1564628740; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564724029"
         r = self.session.get(url)
+        print(url)
         soup = BeautifulSoup(r.text, "lxml")
         page = soup.find("div", class_="pages")
-        mas = page.find_all("a")
-        total_pages = mas[-1].get("href").split("/")[-1][2:]
+        try:
+            mas = page.find_all("a")
+            total_pages = mas[-1].get("href").split("/")[-1][2:]
+        except:
+            total_pages = 1
         count = 1
         while count < int(total_pages) + 1:
             d_u = url + "pn{}".format(count)
@@ -105,7 +112,10 @@ class ShunQiCrawl:
         time.sleep(random.uniform(2, 3))
         res = {}
         self.session.headers["Host"] = "www.11467.com"
-        r = self.session.get(url)
+        try:
+            r = self.session.get(url)
+        except:
+            r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", {"id": "aboutus"})
         cdiv = div.find("div", {"id": "aboutuscontent"})
@@ -115,7 +125,7 @@ class ShunQiCrawl:
         for index, value in enumerate(dl.children):
             if value.name == "dt":
                 res[value.text] = list(dl.children)[index + 1].text.strip()
-            index = index + 2
+            # index = index + 2
         div = soup.find("div", {"id": "gongshang"})
         table = div.find("table", class_="codl")
         trs = table.find_all("tr")
@@ -160,9 +170,10 @@ if __name__ == "__main__":
             ShunQiCrawl().start()
             break
         except Exception as e:
-            print(e)
-            time.sleep(1200)
+            print(traceback.print_exc())
+            time.sleep(10)
 
 # ShunQi().category()
 # ShunQi().url_list("http://chongqing.11467.com/liangping/huilongzhen/pn1", "sld")
 # ShunQi().detail("http://www.11467.com/chongqing/co/126973.htm")
+# ShunQiCrawl().detail("http://www.11467.com/qiye/31559303.htm")
