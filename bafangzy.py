@@ -28,7 +28,7 @@ class BaFZY:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "shapingbaqu/huxijiedao/l-1.html"
+        self.jump = "qijiangqu/qingnianzhen/l-2.html"
         self.status = False
 
     def get_cate(self):
@@ -45,7 +45,7 @@ class BaFZY:
             area = cate[:-2]
             for a in mas[1:]:
                 c_u = "https://www.b2b168.com" + a.get("href")
-                self.total_pages(c_u, area)
+                sa = self.total_pages(c_u, area)
                 # print(c_u)
 
     def total_pages(self, url, area):
@@ -53,7 +53,11 @@ class BaFZY:
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", class_="pages")
         res = self.fpa.findall(div.text)
-        total_pages = int(res[0])
+        try:
+            total_pages = int(res[0])
+        except:
+            total_pages = 0
+            return
         count = 1
         while count < total_pages + 1:
             lurl = url + "l-{}.html"
