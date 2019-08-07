@@ -117,7 +117,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "anshan/ch10"
+        self.jump = "anshan/ch70"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -362,7 +362,7 @@ class DianPing:
                 count = 1
                 while count < 51:
                     jiehun_url = j_u.format(count)
-                    self.parse_jiehun(jiehun_url, locate, locate)
+                    self.page_item(jiehun_url, locate, locate)
                     time.sleep(0.5)
                     count = count + 1
             else:
@@ -370,7 +370,7 @@ class DianPing:
                 mli = li.find_all("a")
                 for a in mli:
                     if a.get("href") and a.get("href").startswith("/"):
-                        if a.get("href") == "/chongqing/ch70":
+                        if a.get("href").endswith("ch70"):
                             qdurl = "http://www.dianping.com" + a.get("href") + "/p{}"
                         else:
                             qdurl = "http://www.dianping.com" + a.get("href") + "p{}"
