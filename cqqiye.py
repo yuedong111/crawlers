@@ -36,14 +36,13 @@ def check_proxy(func):
 
 def second_run(func):
     def decorate(*args, **kwargs):
-        while True:
-            try:
-                res = func(*args, **kwargs)
-                break
-            except:
+        try:
+            res = func(*args, **kwargs)
+        except:
+            while True:
                 time.sleep(2)
                 print("run again {}".format(args))
-                res = func(*args, **kwargs)
+                res = second_run(func)(*args, **kwargs)
                 break
         return res
     return decorate
@@ -187,7 +186,7 @@ if __name__ == "__main__":
         qiye = QiyeCrawl()
         with session_scope() as sess:
             ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-            qiye.jump_to = ms.registerDate
+        qiye.jump_to = "2017-11-23"
         start_time = time.time()
         try:
             qiye.start()
