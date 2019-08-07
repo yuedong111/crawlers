@@ -10,6 +10,7 @@ from utils.esbackends import EsBackends, es_search
 import random
 from requests.exceptions import ProxyError
 import traceback
+
 patern = re.compile(r"[1-9A-GY]{1}[1239]{1}[1-5]{1}[0-9]{5}[0-9A-Z]{10}")
 
 # ds = get_proxy("https", 500)
@@ -35,7 +36,7 @@ def check_proxy(func):
 
 def second_run(func):
     def decorate(*args, **kwargs):
-        while True
+        while True:
             try:
                 res = func(*args, **kwargs)
                 break
@@ -45,6 +46,7 @@ def second_run(func):
                 res = func(*args, **kwargs)
                 break
         return res
+
     return decorate
 
 
@@ -184,7 +186,7 @@ if __name__ == "__main__":
     while True:
         qiye = QiyeCrawl()
         # with session_scope() as sess:
-            # ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
+        # ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
         qiye.jump_to = "2018-06-25"
         start_time = time.time()
         try:
