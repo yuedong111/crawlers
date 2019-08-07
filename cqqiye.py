@@ -33,6 +33,18 @@ def check_proxy(func):
     return decorate
 
 
+def second_run(func):
+    def decorate(*args, **kwargs):
+        try:
+            res = func(*args, **kwargs)
+        except:
+            time.sleep(2)
+            res = func(*args, **kwargs)
+        return res
+
+    return decorate
+
+
 class QiyeCrawl(object):
     qiye_home = "https://gongshang.mingluji.com"
     date_page = "https://gongshang.mingluji.com/chongqing/riqi?page={}"
@@ -88,6 +100,7 @@ class QiyeCrawl(object):
                 url = self.qiye_home + name.a["href"]
                 self.parse_detail(url)
 
+    @second_run
     def parse_detail(self, url):
         ess = es_search("qiyeminglu", url)
         if not ess[1] or not ess[0]:
@@ -168,8 +181,8 @@ if __name__ == "__main__":
     while True:
         qiye = QiyeCrawl()
         # with session_scope() as sess:
-        #     ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-        qiye.jump_to = "2018-08-13"
+            # ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
+        qiye.jump_to = "2018-06-25"
         start_time = time.time()
         try:
             qiye.start()
@@ -185,5 +198,5 @@ if __name__ == "__main__":
         print("一共爬行了{}小时{}分{}秒  共{}秒".format(int(h), int(m), int(mili), during))
         nowt = time.asctime(time.localtime(time.time()))
         print(nowt)
-        print("wait 30 minites")
-        time.sleep(30*60)
+        print("wait 1 minites")
+        time.sleep(60)
