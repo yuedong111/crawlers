@@ -46,7 +46,6 @@ def second_run(func):
                 res = func(*args, **kwargs)
                 break
         return res
-
     return decorate
 
 
@@ -86,6 +85,7 @@ class QiyeCrawl(object):
             url = self.qiye_home + a["href"]
             self.parse_date_page(url)
 
+    @second_run
     def parse_company(self, url):
         time.sleep(random.uniform(0.5, 1))
         self.session.headers["Referer"] = url
@@ -185,9 +185,9 @@ class NotFoundException(Exception):
 if __name__ == "__main__":
     while True:
         qiye = QiyeCrawl()
-        # with session_scope() as sess:
-        # ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-        qiye.jump_to = "2018-06-25"
+        with session_scope() as sess:
+            ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
+            qiye.jump_to = ms.registerDate
         start_time = time.time()
         try:
             qiye.start()
