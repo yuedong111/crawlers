@@ -32,13 +32,19 @@ class TuNiuApi:
             self.current_page = lj.get("current_page")
 
     def parse_city(self):
-        with open("tuniucity.html", "r", encoding="utf-8") as f:
+        with open("static/tuniucity.html", "r", encoding="utf-8") as f:
             content = f.read()
         soup = BeautifulSoup(content, "lxml")
         div = soup.find("div", {"id": "popCity_box"})
+        res = []
+        ul = div.find("ul", class_="popcitylist clearfix")
+        mas = ul.find_all("a")
+        for a in mas:
+            res.append(a.get("title"))
         lis = div.find_all("a")
         for item in lis:
             self.city[item.get("code")] = item.get("title")
+        return res
 
     def driver_get(self):
         url = "http://hotel.tuniu.com/list/300p0s0b0/"
@@ -123,7 +129,7 @@ class TuNiuApi:
                         sess.add(tn)
                         print(res)
             page = page + 1
-            time.sleep(0.5)
+            # time.sleep(0.5)
 
     def get_data(self):
         page = 5
@@ -222,9 +228,9 @@ class TuNiuApi:
                         sess2.commit()
 
     def start(self):
-        self.parse_city()
+        citys = self.parse_city()
         for key in self.city.keys():
-            if key != 300:
+            if self.city[key] not in citys:
                 if self.city[key] == self.current_city:
                     self.city_status = True
                 if self.city_status:
@@ -238,4 +244,4 @@ if __name__ == "__main__":
             break
         except Exception as e:
             print("输验证码 {}".format(e))
-            time.sleep(2 * 3600)
+            time.sleep(2 * 3)
