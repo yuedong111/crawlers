@@ -49,7 +49,7 @@ def second_run(func):
                 print("run again {} {}".format(count, args))
                 count = count + 1
                 if count >= 3:
-                    break
+                    return "too many retrys"
                 res = decorate(*args, **kwargs)
                 break
         return res
@@ -204,7 +204,7 @@ if __name__ == "__main__":
         qiye = QiyeCrawl()
         with session_scope() as sess:
             ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-        qiye.jump_to = "2018-06-14"
+        qiye.jump_to = "2018-06-13"
         start_time = time.time()
         try:
             qiye.start()
