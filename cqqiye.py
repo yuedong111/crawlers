@@ -102,7 +102,7 @@ class QiyeCrawl(object):
             name = item.find("td", {"class": "views-field-name"})
             if name and name.a and name.a["href"]:
                 url = self.qiye_home + name.a["href"]
-                self.parse_detail(url)
+                sa = self.parse_detail(url)
 
     @second_run
     def parse_detail(self, url):
@@ -112,6 +112,9 @@ class QiyeCrawl(object):
             print("parse url {}".format(url))
             r = self.session.get(url)
             soup = BeautifulSoup(r.text, "lxml")
+            h1 = soup.find("h1", {"id": "page-title"})
+            if "未找到" in h1.text:
+                return
             fs = soup.find("fieldset", {"class": "ad_biger"})
             lis = fs.div.find_all("li")
             res = {}
@@ -186,7 +189,7 @@ if __name__ == "__main__":
         qiye = QiyeCrawl()
         with session_scope() as sess:
             ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-        qiye.jump_to = "2017-11-23"
+        qiye.jump_to = "2018-06-15"
         start_time = time.time()
         try:
             qiye.start()
