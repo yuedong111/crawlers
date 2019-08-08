@@ -97,6 +97,9 @@ class QiyeCrawl(object):
         div = soup.find("div", {"class": "view-content"})
         if not div:
             raise NotFoundException()
+        table = div.find("table", class_="views-table cols-2")
+        if not table:
+            raise NotFoundException()
         tb = div.find("tbody")
         trs = tb.find_all("tr")
         for item in trs:
