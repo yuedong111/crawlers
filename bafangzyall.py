@@ -30,7 +30,7 @@ class BaFZY:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = ""
+        self.jump = "beijingqiye/dongchengqu/andingmenjiedao/l-23.html"
         self.status = False
 
     def get_cate(self, url, locate):
@@ -125,7 +125,7 @@ class BaFZY:
             dds = temp.find_all("dd")
             people = dds[2].text
             res["address"] = dds[0].text
-            res["representative"] = people
+            res["representative"] = "".join(people.split())
             phone = dds[3].text
             res["phone"] = phone
             home_url = dds[-1].text
@@ -169,10 +169,10 @@ class BaFZY:
         res["others"] = {}
         for key in list(res.keys()):
             if "法人代表或负责" in key:
-                res["representative"] = res[key]
+                res["representative"] = "".join(res[key].split())
                 res.pop(key)
             elif "成立时间" in key:
-                res["establishedTime"] = res[key]
+                res["establishedTime"] = res[key].strip()
                 res.pop(key)
             elif "注册资金" in key:
                 res["registeredFunds"] = res[key]
