@@ -35,15 +35,22 @@ def check_proxy(func):
 
 
 def second_run(func):
+    count = 0
     def decorate(*args, **kwargs):
+        nonlocal count
         try:
             res = func(*args, **kwargs)
+        except NotFoundException as e:
+            raise e
         except Exception as e:
-            print(e)
+            print(traceback.print_exc())
             while True:
                 time.sleep(2)
-                print("run again {}".format(args))
-                res = second_run(func)(*args, **kwargs)
+                print("run again {} {}".format(count, args))
+                count = count + 1
+                if count >= 3:
+                    break
+                res = decorate(*args, **kwargs)
                 break
         return res
     return decorate
