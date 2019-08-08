@@ -14,7 +14,7 @@ class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = "wulong/yajiangzhen/pn7"
+        self.jump = "zhongxian/pn16"
         self.status = False
         self.session = create_shunqi_session()
 
@@ -31,7 +31,7 @@ class ShunQiCrawl:
                     # print(a.get("href"), dd[0].text+a.text)
                     area = dd[0].text + a.text
                     d_u = self.url_home + a.get("href")
-                    self.total_pages(d_u, area)
+                    sa = self.total_pages(d_u, area)
 
     @staticmethod
     def str_w(ss):
@@ -55,6 +55,9 @@ class ShunQiCrawl:
         return res
 
     def total_pages(self, url, area):
+        temp = self.jump.split("/")[0]
+        if temp not in url:
+            return
         self.session.headers["Host"] = "chongqing.11467.com"
         self.session.headers[
             "Cookie"] = "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085,1564628740; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564724029"
@@ -80,7 +83,7 @@ class ShunQiCrawl:
 
     def url_list(self, url, area):
         print("list url {}".format(url))
-        time.sleep(random.uniform(1, 3))
+        time.sleep(random.uniform(1.5, 3))
         self.session.headers["Host"] = "chongqing.11467.com"
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
@@ -109,7 +112,7 @@ class ShunQiCrawl:
 
     def detail(self, url):
         print("detail url {}".format(url))
-        time.sleep(random.uniform(2, 3))
+        time.sleep(random.uniform(2, 4))
         res = {}
         self.session.headers["Host"] = "www.11467.com"
         try:
@@ -171,7 +174,7 @@ if __name__ == "__main__":
             break
         except Exception as e:
             print(traceback.print_exc())
-            time.sleep(10)
+            time.sleep(100)
 
 # ShunQi().category()
 # ShunQi().url_list("http://chongqing.11467.com/liangping/huilongzhen/pn1", "sld")
