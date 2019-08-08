@@ -8,6 +8,7 @@ from utils.models import EnterpriseCq
 from utils.sqlbackends import session_scope
 from utils.esbackends import EsBackends, es_search
 import random
+from functools import wraps
 from requests.exceptions import ProxyError
 import traceback
 
@@ -22,6 +23,7 @@ Proxies = {
 
 
 def check_proxy(func):
+    @wraps(func)
     def decorate(*args, **kwargs):
         while True:
             try:
@@ -36,6 +38,7 @@ def check_proxy(func):
 
 def second_run(func):
     count = 0
+    @wraps(func)
     def decorate(*args, **kwargs):
         nonlocal count
         try:
@@ -43,12 +46,15 @@ def second_run(func):
         except NotFoundException as e:
             raise e
         except Exception as e:
+            if str(e) == "403 Forbidden":
+                raise e
             print(traceback.print_exc())
             while True:
                 time.sleep(2)
                 print("run again {} {}".format(count, args))
                 count = count + 1
                 if count >= 3:
+                    count = 0
                     return "too many retrys"
                 res = decorate(*args, **kwargs)
                 break
@@ -204,7 +210,7 @@ if __name__ == "__main__":
         qiye = QiyeCrawl()
         with session_scope() as sess:
             ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-        qiye.jump_to = "2018-06-13"
+        qiye.jump_to = "2018-06-12"
         start_time = time.time()
         try:
             qiye.start()
