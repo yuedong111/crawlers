@@ -38,7 +38,8 @@ def second_run(func):
     def decorate(*args, **kwargs):
         try:
             res = func(*args, **kwargs)
-        except:
+        except Exception as e:
+            print(e)
             while True:
                 time.sleep(2)
                 print("run again {}".format(args))
@@ -82,7 +83,7 @@ class QiyeCrawl(object):
             date_time = item.text.strip()
             a = item.find("a")
             url = self.qiye_home + a["href"]
-            self.parse_date_page(url)
+            sa = self.parse_date_page(url)
 
     @second_run
     def parse_company(self, url):
@@ -173,7 +174,11 @@ class QiyeCrawl(object):
                     break
             except NotFoundException:
                 print("{} 一共 {} 页".format(url, count))
-                break
+                return
+            except Exception as e:
+                print(e)
+                print("{} 一共 {} 页".format(url, count))
+                return
             count = count + 1
 
     def start(self):
@@ -189,7 +194,7 @@ if __name__ == "__main__":
         qiye = QiyeCrawl()
         with session_scope() as sess:
             ms = sess.query(EnterpriseCq).order_by(EnterpriseCq.id.desc()).first()
-        qiye.jump_to = "2018-06-15"
+        qiye.jump_to = "2018-06-14"
         start_time = time.time()
         try:
             qiye.start()
