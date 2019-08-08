@@ -14,7 +14,7 @@ class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = "zhongxian/pn16"
+        self.jump = "zhongxian/pn19"
         self.status = False
         self.session = create_shunqi_session()
 
@@ -78,14 +78,20 @@ class ShunQiCrawl:
             if not self.status:
                 count = count + 1
                 continue
-            self.url_list(d_u, area)
+            sa = self.url_list(d_u, area)
             count = count + 1
 
     def url_list(self, url, area):
         print("list url {}".format(url))
         time.sleep(random.uniform(1.5, 3))
         self.session.headers["Host"] = "chongqing.11467.com"
-        r = self.session.get(url)
+        try:
+            r = self.session.get(url, timeout=5)
+        except:
+            return
+        if r.status_code == 500:
+            print("内部错误")
+            return
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find("ul", class_="companylist")
         lis = ul.find_all("li")
