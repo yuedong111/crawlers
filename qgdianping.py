@@ -13,6 +13,7 @@ import pickle
 import os
 import time
 import traceback
+from requests.exceptions import ConnectionError
 
 url = "http://www.dianping.com/chongqing/ch80"
 
@@ -60,12 +61,7 @@ def second_run(func):
         nonlocal count
         try:
             res = func(*args, **kwargs)
-        except NotFoundException as e:
-            raise e
-        except Exception as e:
-            if str(e) == "403 Forbidden":
-                raise e
-            print(traceback.print_exc())
+        except ConnectionError:
             while True:
                 time.sleep(2)
                 print("run again {} {}".format(count, args))
