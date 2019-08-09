@@ -52,6 +52,33 @@ item_city = {
     "hotel": "http://www.dianping.com/{}/hotel/"
 }
 
+
+def second_run(func):
+    count = 0
+    @wraps(func)
+    def decorate(*args, **kwargs):
+        nonlocal count
+        try:
+            res = func(*args, **kwargs)
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            if str(e) == "403 Forbidden":
+                raise e
+            print(traceback.print_exc())
+            while True:
+                time.sleep(2)
+                print("run again {} {}".format(count, args))
+                count = count + 1
+                if count >= 3:
+                    count = 0
+                    return "too many retrys"
+                res = decorate(*args, **kwargs)
+                break
+        return res
+    return decorate
+
+
 def yanzhengma_warning(fn):
 
     def decorete(*args, **kwargs):
@@ -61,7 +88,7 @@ def yanzhengma_warning(fn):
                 break
             except Exception as e:
                 print("输入验证码 {}{}{}".format(kwargs.get("url"), args, traceback.print_exc()))
-                time.sleep(2)
+                time.sleep(60)
         return res
     return decorete
 
@@ -117,7 +144,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "anshan/ch90/g90"
+        self.jump = "anshun/ch10"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -132,6 +159,7 @@ class DianPing:
                 yield (t, a.text)
 
     @yanzhengma_warning
+    @second_run
     def page_item(self, url, area, locate):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")

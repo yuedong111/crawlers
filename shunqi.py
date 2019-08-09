@@ -14,8 +14,9 @@ class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = "zhongxian/pn19"
+        self.jump = "zhongxian/dongxizhen/pn17"
         self.status = False
+        self.areastatus = False
         self.session = create_shunqi_session()
 
     def category(self):
@@ -57,6 +58,8 @@ class ShunQiCrawl:
     def total_pages(self, url, area):
         temp = self.jump.split("/")[0]
         if temp not in url:
+            self.areastatus = True
+        if not self.areastatus:
             return
         self.session.headers["Host"] = "chongqing.11467.com"
         self.session.headers[
