@@ -4,7 +4,7 @@ from utils.make_sessions import create_session
 import time
 from utils.models import WGQY
 from utils.sqlbackends import session_scope
-
+import traceback
 
 class WG:
 
@@ -13,52 +13,62 @@ class WG:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "foshan/pn51"
+        self.jump = "huhehaote/pn17.htm"
         self.status = False
 
     def parse_page(self, url, area):
         d_url = url + "pn{}.htm"
-        count = 1
-        r = self.session.get(d_url.format(count))
-        soup = BeautifulSoup(r.text, "lxml")
-        divp = soup.find("div", class_="pages")
-        if not divp:
-            total_page = 1
-        else:
-            cite = divp.find("cite").text
-            temp = cite.split("/")[-1]
-            total_page = int(temp[:-1])
-        while count < total_page + 1:
-            print(d_url.format(count))
-            if self.jump in d_url.format(count):
-                self.status = True
-            if not self.status:
-                count = count + 1
-                continue
+        try:
+            count = 1
             r = self.session.get(d_url.format(count))
             soup = BeautifulSoup(r.text, "lxml")
-            div = soup.find("div", class_="left_box")
-            uls = div.find_all("ul")
-            for item in uls:
-                res = {}
-                res["location"] = area
-                a = item.find("a")
-                res["enterpriseName"] = a.get("title")
-                res["url"] = a.get("href")
-                lis = item.find_all("li")
-                mb = lis[1].text
-                res["primaryBusiness"] = mb.strip()
-                if len(lis) > 2:
-                    phone = lis[2].text.strip()
-                    res["phone"] = phone
+            divp = soup.find("div", class_="pages")
+            if not divp:
+                total_page = 1
+            else:
+                cite = divp.find("cite").text
+                temp = cite.split("/")[-1]
+                total_page = int(temp[:-1])
+            print("{} gong {} ye ".format(url, total_page))
+            while count < total_page + 1:
+                print(d_url.format(count))
+                if not self.status:
+                    if self.jump in d_url.format(count):
+                        self.status = True
+                    count = count + 1
+                    continue
+                try:
+                    r = self.session.get(d_url.format(count))
+                except Exception as e:
+                    print(e)
+                print("kaishi jiexi ")
+                soup = BeautifulSoup(r.text, "lxml")
+                div = soup.find("div", class_="left_box")
+                uls = div.find_all("ul")
                 with session_scope() as sess:
-                    wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
-                    if not wgs:
-                        result = self.parse_detail(res["url"])
-                        res.update(result)
-                        wg = WGQY(**res)
-                        sess.add(wg)
-            count = count + 1
+                    for item in uls:
+                        res = {}
+                        res["location"] = area
+                        a = item.find("a")
+                        res["enterpriseName"] = a.get("title")
+                        res["url"] = a.get("href")
+                        lis = item.find_all("li")
+                        mb = lis[1].text
+                        res["primaryBusiness"] = mb.strip()
+                        if len(lis) > 2:
+                            phone = lis[2].text.strip()
+                            res["phone"] = phone
+                        wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
+                        if not wgs:
+                            result = self.parse_detail(res["url"])
+                            res.update(result)
+                            wg = WGQY(**res)
+                            sess.add(wg)
+                    print("wanbi")
+                    count = count + 1
+        except:
+            with open("wanguo.txt", "w+") as f:
+                print(d_url, file=f)
 
     def parse_detail(self, url):
         time.sleep(0.5)
@@ -103,7 +113,7 @@ class WG:
         for key in temp.keys():
             if "成立时间：" in key:
                 res["establishedTime"] = temp[key]
-            elif "注册资金：" in key:
+            elif "注册资金" in key:
                 res["registeredFunds"] = temp[key]
             elif "所属行业：" in key:
                 res["category"] = temp[key]
@@ -129,7 +139,7 @@ if __name__ == "__main__":
             WG().start()
             break
         except Exception as e:
-            print(e)
+            print(traceback.print_exc())
             time.sleep(300)
 
 
