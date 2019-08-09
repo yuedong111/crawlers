@@ -13,7 +13,7 @@ class WG:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "huhehaote/pn17.htm"
+        self.jump = "huhehaote/pn40.htm"
         self.status = False
 
     def parse_page(self, url, area):
@@ -40,7 +40,11 @@ class WG:
                 try:
                     r = self.session.get(d_url.format(count))
                 except Exception as e:
-                    print(e)
+                    time.sleep(2)
+                    try:
+                        r = self.session.get(d_url.format(count))
+                    except Exception as e:
+                        print(e)
                 print("kaishi jiexi ")
                 soup = BeautifulSoup(r.text, "lxml")
                 div = soup.find("div", class_="left_box")
