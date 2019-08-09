@@ -5,15 +5,40 @@ import time
 from utils.models import WGQY
 from utils.sqlbackends import session_scope
 import traceback
+from functools import wraps
+
+
+def second_run(func):
+    count = 0
+
+    @wraps(func)
+    def decorate(*args, **kwargs):
+        nonlocal count
+        try:
+            res = func(*args, **kwargs)
+        except Exception as e:
+            print(e)
+            while True:
+                time.sleep(2)
+                print("run again {} {}".format(count, args))
+                count = count + 1
+                if count >= 3:
+                    count = 0
+                    return "too many retrys"
+                res = decorate(*args, **kwargs)
+                break
+        return res
+
+    return decorate
+
 
 class WG:
-
     url_home = "https://www.trustexporter.com"
     url = "https://www.trustexporter.com/chongqing/pn{}.htm"
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "huhehaote/pn40.htm"
+        self.jump = "weifang/pn25.htm"
         self.status = False
 
     def parse_page(self, url, area):
@@ -37,48 +62,45 @@ class WG:
                         self.status = True
                     count = count + 1
                     continue
-                try:
-                    r = self.session.get(d_url.format(count))
-                except Exception as e:
-                    time.sleep(2)
-                    try:
-                        r = self.session.get(d_url.format(count))
-                    except Exception as e:
-                        print(e)
-                print("kaishi jiexi ")
-                soup = BeautifulSoup(r.text, "lxml")
-                div = soup.find("div", class_="left_box")
-                uls = div.find_all("ul")
-                with session_scope() as sess:
-                    for item in uls:
-                        res = {}
-                        res["location"] = area
-                        a = item.find("a")
-                        res["enterpriseName"] = a.get("title")
-                        res["url"] = a.get("href")
-                        lis = item.find_all("li")
-                        mb = lis[1].text
-                        res["primaryBusiness"] = mb.strip()
-                        if len(lis) > 2:
-                            phone = lis[2].text.strip()
-                            res["phone"] = phone
-                        wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
-                        if not wgs:
-                            result = self.parse_detail(res["url"])
-                            res.update(result)
-                            wg = WGQY(**res)
-                            sess.add(wg)
-                    print("wanbi")
-                    count = count + 1
-        except:
-            with open("wanguo.txt", "w+") as f:
-                print(d_url, file=f)
+                sa = self.final_parse(d_url, count, area)
+                count = count + 1
+        except Exception as e:
+            print(e)
+
+    @second_run
+    def final_parse(self, url, count, area):
+        r = self.session.get(url.format(count))
+        print("kaishi jiexi ")
+        soup = BeautifulSoup(r.text, "lxml")
+        div = soup.find("div", class_="left_box")
+        uls = div.find_all("ul")
+        with session_scope() as sess:
+            for item in uls:
+                res = {}
+                res["location"] = area
+                a = item.find("a")
+                res["enterpriseName"] = a.get("title")
+                res["url"] = a.get("href")
+                lis = item.find_all("li")
+                mb = lis[1].text
+                res["primaryBusiness"] = mb.strip()
+                if len(lis) > 2:
+                    phone = lis[2].text.strip()
+                    res["phone"] = phone
+                wgs = sess.query(WGQY).filter(WGQY.url == res["url"]).first()
+                if not wgs:
+                    result = self.parse_detail(res["url"])
+                    res.update(result)
+                    wg = WGQY(**res)
+                    sess.add(wg)
+            print("wanbi")
 
     def parse_detail(self, url):
         time.sleep(0.5)
         print("detail {}".format(url))
         res = {}
-        self.session.headers["Cookie"] = "Hm_lvt_908376e0e856e8b64f7af6081984a5d1=1564651662,1564966733; Hm_lpvt_908376e0e856e8b64f7af6081984a5d1=1564968718"
+        self.session.headers[
+            "Cookie"] = "Hm_lvt_908376e0e856e8b64f7af6081984a5d1=1564651662,1564966733; Hm_lpvt_908376e0e856e8b64f7af6081984a5d1=1564968718"
         try:
             r = self.session.get(url)
         except:
@@ -112,7 +134,7 @@ class WG:
         temp = {}
         for index, value in enumerate(tds):
             if len(tds) > index + 1:
-                temp[value.text.strip()] = tds[index+1].text.strip()
+                temp[value.text.strip()] = tds[index + 1].text.strip()
             index = index + 2
         for key in temp.keys():
             if "成立时间：" in key:
@@ -145,5 +167,3 @@ if __name__ == "__main__":
         except Exception as e:
             print(traceback.print_exc())
             time.sleep(300)
-
-
