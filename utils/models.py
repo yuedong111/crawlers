@@ -41,7 +41,7 @@ class MeiTuanShop(Base):
     phone = Column(String(66))
     address = Column(String(512))
     score = Column(String(32))
-    url = Column(String(512))
+    url = Column(String(512), index=True)
     openTime = Column(String(226))
 
 
@@ -65,7 +65,7 @@ class GoverNews(Base):
     title = Column(String(888))
     publishDate = Column(String(24))
     about = Column(String(128))
-    url = Column(String(128))
+    url = Column(String(128), index=True)
     content = Column(LONGTEXT)
 
 
@@ -114,6 +114,7 @@ class DZDianPing(Base):
     url = Column(String(128), index=True)
     phone = Column(String(66))
     openTime = Column(String(66))
+
 
 class TuNiuAll(Base):
     __tablename__ = "tuniuquanguo"
@@ -172,7 +173,7 @@ class WGQY(Base):
     address = Column(String(256))
     primaryBusiness = Column(String(128))
     phone = Column(String(128))
-    url = Column(String(80))
+    url = Column(String(80), index=True)
     establishedTime = Column(String(22))
     registeredFunds = Column(String(64))
     location = Column(String(36))
@@ -180,7 +181,7 @@ class WGQY(Base):
     about = Column(LONGTEXT)
 
 
-class BFZY(Base):
+class BFZYCQ(Base):
     __tablename__ = "bafangziyuanchongqing"
     id = Column(Integer, autoincrement=True, primary_key=True)
     enterpriseName = Column(String(128), index=True)
@@ -188,6 +189,23 @@ class BFZY(Base):
     area = Column(String(32))
     phone = Column(String(48))
     representative = Column(String(40))
+    establishedTime = Column(String(22))
+    url = Column(String(66), index=True)
+    registeredFunds = Column(String(64))
+    updateTime = Column(String(22))
+    about = Column(LONGTEXT)
+    others = Column(LONGTEXT)
+
+
+class BFZY(Base):
+    __tablename__ = "bafangziyuan"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    area = Column(String(32))
+    locate = Column(String(16))
+    phone = Column(String(48))
+    representative = Column(String(88))
     establishedTime = Column(String(22))
     url = Column(String(66), index=True)
     registeredFunds = Column(String(64))
