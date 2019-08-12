@@ -14,6 +14,7 @@ import os
 import time
 import traceback
 from requests.exceptions import ConnectionError
+from functools import wraps
 
 url = "http://www.dianping.com/chongqing/ch80"
 
@@ -140,7 +141,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "anshun/ch10"
+        self.jump = "anping/ch30"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -164,6 +165,7 @@ class DianPing:
             lis = div.find_all("li")
             for li in lis:
                 res = {}
+                res["cateUrl"] = url
                 res["locate"] = locate
                 res["area"] = area.strip()
                 name = li.find("a", class_="shopname")
@@ -189,6 +191,7 @@ class DianPing:
             divs = soup.find_all("div", class_="shop-info")
             for item in divs:
                 res= {}
+                res["cateUrl"] = url
                 res["locate"] = locate
                 res["area"] = area
                 div = item.find("div", class_="shop-title")
@@ -217,6 +220,7 @@ class DianPing:
             lis = div.find_all("li")
             for item in lis:
                 res = {}
+                res["cateUrl"] = url
                 res["locate"] = locate
                 res["area"] = area
                 a = item.find("a", {"data-hippo-type": "shop"})
@@ -454,6 +458,7 @@ class DianPing:
         lis = ul.find_all("li")
         for item in lis:
             res = {}
+            res["cateUrl"] = url
             res["locate"] = locate
             res["area"] = area.strip()
             a = item.a
@@ -511,6 +516,7 @@ class DianPing:
         lis = ul.find_all("li", class_="hotel-block")
         for li in lis:
             res = {}
+            res["cateUrl"] = url
             res["locate"] = locate
             res["area"] = area
             h2 = li.find("h2", class_="hotel-name")
@@ -533,15 +539,15 @@ class DianPing:
             data_poi = li.get("data-poi")
             hotel_url = "http://www.dianping.com/shop/" + data_poi
             res["url"] = hotel_url
-            try:
-                address = self.parse_hotel_detail(hotel_url)
-                res["address"] = address
-            except Exception as e:
-                print("error when parse hotel address {}".format(e))
-            dz = DZDianPing(**res)
             with session_scope() as sess:
                 qxc = sess.query(DZDianPing).filter(DZDianPing.url == res["url"]).first()
                 if not qxc:
+                    try:
+                        address = self.parse_hotel_detail(hotel_url)
+                        res["address"] = address
+                    except Exception as e:
+                        print("error when parse hotel address {}".format(e))
+                    dz = DZDianPing(**res)
                     sess.add(dz)
                     print(res)
 
