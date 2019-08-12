@@ -14,9 +14,9 @@ from jiehun_meishi import parse_jiehun_item, parse_meishi_item
 from meituanpeixun import parse_peixun
 
 url_map = {
-    "life": "https://cq.meituan.com/shenghuo/pn{}/",
-    "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
-    "meishi": "https://cq.meituan.com/meishi/pn{}/",
+    # "life": "https://cq.meituan.com/shenghuo/pn{}/",
+    # "xiuxian": "https://cq.meituan.com/xiuxianyule/pn{}/",
+    # "meishi": "https://cq.meituan.com/meishi/pn{}/",
     "jiankangliren": "https://cq.meituan.com/jiankangliren/pn{}/",
     "jiehun": "https://cq.meituan.com/jiehun/pn{}/",
     "qinzi": "https://cq.meituan.com/qinzi/pn{}/",
@@ -155,8 +155,12 @@ def parse_pages(url):
     session.headers["Referer"] = url
     if "meishi" in url:
         print("parse meishi url {}".format(url))
-        for item in parse_meishi_item(session, url):
-            parse_shop(item)
+        try:
+            for item in parse_meishi_item(session, url):
+                # print("parse {}".format(item))
+                parse_shop(item)
+        except:
+            print(traceback.print_exc())
     elif "jiehun" in url:
         parse_jiehun_item(session, url)
     else:
@@ -201,6 +205,9 @@ def total_pages(url):
     except:
         print(url[:-5])
         driver.get(url[:-5])
+    while "verify.meituan.com/v2" in driver.current_url:
+        print("输入验证码")
+        time.sleep(10)
     time.sleep(1)
     r = driver.page_source
     # with open("test.html", "w", encoding="utf-8") as f:
@@ -224,7 +231,7 @@ def total_pages(url):
                         temp.append(item.text)
         last_page = int(temp[-1])
     except Exception as e:
-        print(e)
+        print(traceback.print_exc())
         last_page = 1
     print(last_page)
     count = 1
@@ -328,28 +335,32 @@ def start():
                         try:
                             total_pages(url)
                         except Exception as e:
-                            print(e)
+                            print(traceback.print_exc())
             elif "meishi" in url_map[item]:
                 div = soup.find("div", {"class": "filter", "data-reactid": "15"})
                 mas = div.find_all("a")
-                global JUMP, STATUS
+                # global JUMP, STATUS
                 for a in mas:
                     if a.get("href") and "?" not in a.get("href"):
                         url = a.get("href") + "pn{}/"
                         try:
-                            if JUMP in url:
-                                STATUS = True
-                            if not STATUS:
-                                continue
+                            # if JUMP in url:
+                            #     STATUS = True
+                            # if not STATUS:
+                            #     continue
                             total_pages(url)
                         except Exception as e:
-                            print(e)
+                            print(traceback.print_exc())
             else:
                 div = soup.find("div", {"class": "filter-box"})
                 if not div:
                     # print(r.text.find("龙湖新壹街店"))
                     try:
-                        div = soup.find_all("div", class_="tag-group tag-group-expend")
+                        div = soup.find_all("div", class_="filter-component")
+                        if not div:
+                            raise Exception("没有找到 {}".format(url_map[item].format(1)))
+                        div = div[-1]
+                        div = div.find_all("div", class_="tag-group tag-group-expend")
                         if not div:
                             raise Exception("没有找到 {}".format(url_map[item].format(1)))
                         div = div[0]
@@ -365,7 +376,7 @@ def start():
                                     except Exception as e:
                                         print(e)
                     except Exception as e:
-                        print(e)
+                        print(traceback.print_exc())
                 else:
                     mas = div.find_all("a")
                     for ite in mas:
@@ -388,5 +399,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # driver.quit()
         sys.exit()
-    # finally:
-        # driver.quit()
+    finally:
+        driver.quit()
