@@ -23,10 +23,11 @@ def create_session():
 
 def create_webdriver() -> webdriver.Chrome:
     opt = webdriver.ChromeOptions()
-    opt.add_argument('headless')
+    # opt.add_argument('headless')
     opt.add_argument('--disable-gpu')
     opt.add_argument('window-size=1280,720')
-    opt.add_argument("--proxy-server=http://127.0.0.1:8080")
+    # opt.add_argument("--proxy-server=http://127.0.0.1:8080")
+    opt.add_argument("--ignore-certificate-errors")
     opt.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
     opt.add_experimental_option('excludeSwitches', ['enable-automation'])
     opt.add_argument('log-level=3')
@@ -49,7 +50,7 @@ def create_meituan_session():
         "Upgrade-Insecure-Requests": "1",
         "Cache-Control": "max-age=0",
         "Host": "cq.meituan.com",
-        "Cookie": "__mta=151828102.1562565124818.1562661401039.1564621502514.8; _ga=GA1.2.1825814531.1546998833; _lxsdk_cuid=16bd023931bc8-066f6cebecafc4-e343166-1fa400-16bd023931bc8; _hc.v=3c8a39ae-eab5-7e72-9895-1e0cefa4d0eb.1562565129; iuuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; _lxsdk=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; webp=1; a2h=4; wm_order_channel=default; utm_source=; __utma=74597006.1825814531.1546998833.1562738511.1563519924.3; __utmz=74597006.1563519924.3.2.utmcsr=blog.csdn.net|utmccn=(referral)|utmcmd=referral|utmcct=/xing851483876/article/details/81842329; ci=45; cityname=%E9%87%8D%E5%BA%86; i_extend=C189913015384320739764905118182476349850_b1_c0_e153957522001196166114GimthomepageallcateH__a100001__b3; rvct=45%2C30%2C1; uuid=a6a26792ab9148a8b436.1564107123.1.0.0; client-id=8dd5b549-ab92-44e4-a1c9-313f4476bc82; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; __mta=151828102.1562565124818.1564536497942.1564621361672.15; lat=29.463506; lng=106.549321; _lxsdk_s=16c4ab34ee5-0dd-b8d-79%7C%7C11"
+        "Cookie": "_lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; ci=45; rvct=45%2C1%2C114; _ga=GA1.2.1247011406.1563181057; uuid=07d90234d8cb4ed5b732.1564621707.1.0.0; _lx_utm=utm_source%3Dbaidu%26utm_medium%3Dorganic%26utm_term%3D%25E7%25BE%258E%25E5%259B%25A2; mtcdn=K; __mta=146208011.1562725971505.1564202445952.1564994899718.24; client-id=114b663a-2e02-46a1-991d-404d19e2d914; lat=29.642159; lng=106.548632; _lxsdk_s=16c60ed953c-70b-db5-0be%7C%7C62"
     }
     return s
 
@@ -67,7 +68,7 @@ def create_qiye_session():
         "Cache-Control": "max-age=0",
         "Host": "gongshang.mingluji.com",
         "Upgrade-Insecure-Requests": "1",
-        "Cookie": "__utmz=152261551.1562899049.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); has_js=1; Hm_lvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1563152848,1563179374,1563868785,1564360505; __utmc=152261551; __utma=152261551.328900377.1562899049.1564369508.1564384398.28; __utmt=1; __utmb=152261551.5.10.1564384398; Hm_lpvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1564385360",
+        "Cookie": "__utmz=152261551.1562899049.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); has_js=1; Hm_lvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1564644138,1564968109,1565082032,1565157902; Hm_lpvt_f733651f7f7c9cfc0c1c62ebc1f6388e=1565157902; __utma=152261551.328900377.1562899049.1565082032.1565157902.38; __utmc=152261551; __utmt=1; __utmb=152261551.1.10.1565157902"
     }
     return s
 
@@ -122,7 +123,7 @@ def create_tuniu_session():
         "Connection": "keep-alive",
         "Host": "hotel.tuniu.com",
         "X-Requested-With": "XMLHttpRequest",
-        "Cookie": "tuniuuser_citycode=MzAw; p_phone_400=4007-999-999; p_phone_level=0; p_global_phone=%2B0086-25-8685-9999; _tacau=MCwwOWIxYWRkZi05ZDgxLTI4MzgtZTRkZi0yNjFiOWUwMjI3ZWMs; _tact=MWU4ZWU5MzUtYWEzNC1iZTZkLTQ0OGYtNTdlNWE4NGJkMzRm; _tacc=1; _ga=GA1.2.350844114.1564131863; OLBSESSID=cpgp411o03nm6ae7s5iekmiqi1; MOBILE_APP_SETTING_STATE-126=CLOSE; hotel_view_history_new_guid=974C1855-9D94-3C70-F0D7-18A4AF4F7DFB; UM_distinctid=16c2d86d4fc71b-0d1aa791e3325a-36664c08-1fa400-16c2d86d4fd5a4; __xsptplus352=352.4.1564216598.1564216598.1%234%7C%7C%7C%7C%7C%23%234vRGfgDQNnXazGokMMmVKTpiK30rD0XB%23; tuniu_partner=MTc2NTgsMCwsN2Q1YjI4Y2Y1NDViOGZjYjllNjBkMTZkMTNhNTYyOTU%3D; _tacz2=taccsr%3Dwww.so%7Ctacccn%3D%28organic%29%7Ctaccmd%3D%28none%29%7Ctaccct%3D%2525E9%252580%252594%2525E7%252589%25259B%2525E6%252597%252585%2525E8%2525A1%25258C%2525E7%2525BD%252591%7Ctaccrt%3D%28none%29; _taca=1564131857258.1564216598446.1564369575147.5; _tacb=NzA1OTE1M2UtOWNmZC1kZTU3LWRjODgtYzhmNDcwYjJmMDE0; PageSwitch=1%2C213612736; _gid=GA1.2.376646834.1564369575; MOBILE_APP_SETTING_OPEN-126=1; tuniuuser_ip_citycode=MzAw; isHaveShowPriceTips=1; Hm_lvt_51d49a7cda10d5dd86537755f081cc02=1564369589; Hm_lpvt_51d49a7cda10d5dd86537755f081cc02=1564369589; hotel_index_search_history=eyJfMzAwIjp7ImNoZWNraW5kYXRlIjoiMjAxOS03LTMwIiwiY2hlY2tvdXRkYXRlIjoiMjAxOS03LTMxIiwiY2l0eV9pZCI6IjMwMCIsImNpdHlfbmFtZSI6IumHjeW6hiJ9fQ==; hotel_checkindate=2019-7-30; hotel_checkoutdate=2019-7-31; hotel_order_begin_date=2019-7-30; hotel_order_end_date=2019-7-31; CNZZDATA5726564=cnzz_eid%3D550169148-1564129206-http%253A%252F%252Fhotel.tuniu.com%252F%26ntime%3D1564367298; _pzfxuvpc=1564131862548%7C3416526400151055857%7C22%7C1564369613459%7C5%7C2167611298499104658%7C1087456991132054631; _pzfxsvpc=1087456991132054631%7C1564369575216%7C4%7Chttps%3A%2F%2Fwww.so.com%2Fs%3Fq%3D%25E9%2580%2594%25E7%2589%259B%25E6%2597%2585%25E8%25A1%258C%25E7%25BD%2591%26src%3Dsrp_suggst_brand_ci_7%26fr%3Dlm%26ls%3Dsm2338310%26lm_extend%3Dctype%253A31%26psid%3Da138216431274d24ab452da02a0607c2%26eci%3D%26nlpv%3Dbrand_ci_7; rg_entrance=010000%2F003001%2F000013%2F000000"
+        "Cookie": "tuniuuser_citycode=MzAw; p_phone_400=4007-999-999; p_phone_level=0; p_global_phone=%2B0086-25-8685-9999; _tacau=MCwwOWIxYWRkZi05ZDgxLTI4MzgtZTRkZi0yNjFiOWUwMjI3ZWMs; _tact=MWU4ZWU5MzUtYWEzNC1iZTZkLTQ0OGYtNTdlNWE4NGJkMzRm; _ga=GA1.2.350844114.1564131863; MOBILE_APP_SETTING_STATE-126=CLOSE; hotel_view_history_new_guid=974C1855-9D94-3C70-F0D7-18A4AF4F7DFB; UM_distinctid=16c2d86d4fc71b-0d1aa791e3325a-36664c08-1fa400-16c2d86d4fd5a4; isHaveShowPriceTips=1; Hm_lvt_51d49a7cda10d5dd86537755f081cc02=1564369589; __xsptplus352=352.7.1564378228.1564378228.1%234%7C%7C%7C%7C%7C%23%23gKsYlEumQeoG6p2XOSjg3z-oC7EtnHuq%23; _tacc=1; _pzfxsfc=u10316631.k23002398892.a13034646670.pb; PageSwitch=1%2C213612736; _gid=GA1.2.398492157.1564643018; OLBSESSID=4rop6uuv5qncmjca3t98ate8h2; tuniu_partner=MTQwMCwwLCwzMTExMWViZjMxNTgyMWUxOTcwZWE0YTAzNzZhMDRjMw%3D%3D; _tacz2=taccsr%3Dbaidu%7Ctacccn%3D%28organic%29%7Ctaccmd%3Dmkt_06002401%7Ctaccct%3Dtuniu%7Ctaccrt%3D%28none%29; MOBILE_APP_SETTING_OPEN-126=1; _taca=1564131857258.1564708759843.1564723842333.14; _tacb=N2MxMTY2Y2MtOTJhOC03Y2I1LWQ3ZWYtMzNhOTg4YWU0YmE5; CNZZDATA5726564=cnzz_eid%3D550169148-1564129206-http%253A%252F%252Fhotel.tuniu.com%252F%26ntime%3D1564725567; hotel_checkindate=2019-8-3; hotel_checkoutdate=2019-8-4; hotel_index_search_history=eyJfMjgwMiI6eyJjaGVja2luZGF0ZSI6IjIwMTktOC0zIiwiY2hlY2tvdXRkYXRlIjoiMjAxOS04LTQiLCJjaXR5X2lkIjoiMjgwMiIsImNpdHlfbmFtZSI6IuaIkOmDvSJ9LCJfMzQwMiI6eyJjaGVja2luZGF0ZSI6IjIwMTktOC0zIiwiY2hlY2tvdXRkYXRlIjoiMjAxOS04LTQiLCJjaXR5X2lkIjoiMzQwMiIsImNpdHlfbmFtZSI6IuadreW3niJ9LCJfMjAwIjp7ImNoZWNraW5kYXRlIjoiMjAxOS04LTMiLCJjaGVja291dGRhdGUiOiIyMDE5LTgtNCIsImNpdHlfaWQiOiIyMDAiLCJjaXR5X25hbWUiOiLljJfkuqwifX0=; _pzfxuvpc=1564131862548%7C3416526400151055857%7C125%7C1564726460692%7C17%7C8531687672194010182%7C1492821672189480980; _pzfxsvpc=1492821672189480980%7C1564723842619%7C28%7C; rg_entrance=010000%2F003001%2F000013%2F000000; hotel_order_begin_date=2019-8-12; hotel_order_end_date=2019-8-15; _gat=1"
     }
     return s
 
@@ -139,7 +140,24 @@ def create_shunqi_session():
         "Connection": "keep-alive",
         "Cache-Control": "max-age=0",
         "Upgrade-Insecure-Requests": "1",
-        "Cookie": "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564555393"
+        "Cookie": "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085,1564628740,1564967904; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564967904"
+    }
+    return s
+
+
+def create_soule_session():
+    s = requests.Session()
+    s.headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"
+        ),
+        # "Referer": "https://item.jd.com/4609660.html",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        "Cache-Control": "max-age=0",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
     }
     return s
 
@@ -153,7 +171,8 @@ USERAGETNS = [
     "User-Agent,Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11",
     "User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/6.2.4094.1 Safari/537.36"
 ]
-COOKIES = "__mta=210483882.1562565121313.1562565121313.1564621570914.2; _ga=GA1.2.1825814531.1546998833; _lxsdk_cuid=16bd023931bc8-066f6cebecafc4-e343166-1fa400-16bd023931bc8; __mta=210483882.1562565121313.1562565121313.1562565121313.1; _hc.v=3c8a39ae-eab5-7e72-9895-1e0cefa4d0eb.1562565129; iuuid=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; _lxsdk=C1EA418E59192BE72919EF4468CFA088AFC416E2D10120BB18440DA3BF854258; webp=1; a2h=4; wm_order_channel=default; utm_source=; __utma=74597006.1825814531.1546998833.1562738511.1563519924.3; __utmz=74597006.1563519924.3.2.utmcsr=blog.csdn.net|utmccn=(referral)|utmcmd=referral|utmcct=/xing851483876/article/details/81842329; ci=45; cityname=%E9%87%8D%E5%BA%86; i_extend=C189913015384320739764905118182476349850_b1_c0_e153957522001196166114GimthomepageallcateH__a100001__b3; rvct=45%2C30%2C1; uuid=a6a26792ab9148a8b436.1564107123.1.0.0; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; client-id=f055f018-1a2e-4701-8db0-0dbb73787be7; lat=29.463506; lng=106.549321; _lxsdk_s=16c4ab34ee5-0dd-b8d-79%7C%7C14"
+
+COOKIES = "_lxsdk_cuid=16bd9b99c9ec8-035ab9a6954478-36664c08-1fa400-16bd9b99ca0c8; __mta=20889095.1562725959175.1562725959175.1562725959175.1; iuuid=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; cityname=%E9%87%8D%E5%BA%86; _lxsdk=8369B0074906E31235D094B1D10CB5398B04DC92AAFDBADB7477CB96EEFF986E; _hc.v=10962146-cd2f-a7a9-c15a-d942a6e12989.1562744821; ci=45; Hm_lvt_dbeeb675516927da776beeb1d9802bd4=1562914412,1563263956; rvct=45%2C1%2C114; _ga=GA1.2.1247011406.1563181057; uuid=07d90234d8cb4ed5b732.1564621707.1.0.0; _lx_utm=utm_source%3Dbaidu%26utm_medium%3Dorganic%26utm_term%3D%25E7%25BE%258E%25E5%259B%25A2; mtcdn=K; client-id=ef01b524-4088-4395-bcb8-c971a35ac261; lat=29.642159; lng=106.548632; _lxsdk_s=16c60ed953c-70b-db5-0be%7C%7C58"
 
 def get_proxy(cate, count):
     ps_map = {"http": "wn", "https": "wt"}
