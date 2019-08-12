@@ -233,6 +233,7 @@ class SouLeWang(Base):
     businessModel = Column(String(24))
     siteUrl = Column(String(88))
     location = Column(String(32))
+    registerDate = Column(String(64))
     registeredFunds = Column(String(64))
     companyScale = Column(String(28))
     annualTurnover = Column(LONGTEXT)
