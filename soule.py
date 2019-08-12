@@ -109,7 +109,8 @@ class SouLe(object):
             res["location"] = location
             res["enterpriseName"] = a.text
             span = li.find("span", class_="tel")
-            res["phone"] = span.text
+            if hasattr(span, "text"):
+                res["phone"] = span.text
             dds = li.find_all("dd")
             temp = []
             for dd in dds:
@@ -197,7 +198,10 @@ class SouLe(object):
                         res["phone"] = tem1
             div = div.find("div", class_="more")
             a = div.find("a")
-            d_u = a.get("href")
+            if a.get("href").startswith("http"):
+                d_u = a.get("href")
+            else:
+                d_u = "http:" + a.get("href")
             r = self.session.get(d_u)
             soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", {"id": "companyinfo"})
