@@ -8,6 +8,7 @@ import traceback
 from functools import wraps
 import re
 
+
 def second_run(func):
     count = 0
 
@@ -64,6 +65,7 @@ class SouLe(object):
             category = a.text
             self._pages(d_u, category, location)
 
+    @second_run
     def _pages(self, url, category, location):
         print("total {}".format(url))
         r = self.session.get(url)
@@ -90,6 +92,7 @@ class SouLe(object):
 
     @second_run
     def _list_item(self, url, category, location):
+        time.sleep(0.3)
         print("list url {}".format(url))
         r = self.session.get(url)
         r.encoding = "utf-8"
@@ -150,7 +153,7 @@ class SouLe(object):
             ss4 = "商铺网址："
             for item in temp:
                 if ss1 in item:
-                    res["contact"] = item[len(ss1):]
+                    res["contact"] = " ".join(item[len(ss1):].strip().split())
                 elif ss2 in item:
                     res["postCodes"] = item[len(ss2):]
                 elif ss4 in item:
@@ -190,7 +193,7 @@ class SouLe(object):
             for item in temp:
                 for k in tem.keys():
                     if "dd" in k and isinstance(tem.get(k), str) and tem.get(k) in item:
-                        res[k.split("_")[-1]] = item[len(tem.get(k)):].strip()
+                        res[k.split("_")[-1]] = " ".join(item[len(tem.get(k)):].strip().split())
                     elif "dd" in k and isinstance(tem.get(k), list):
                         for tt in tem.get(k):
                             if tt in item:
