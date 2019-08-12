@@ -114,6 +114,7 @@ class DZDianPing(Base):
     url = Column(String(128), index=True)
     phone = Column(String(66))
     openTime = Column(String(66))
+    cateUrl = Column(String(256))
 
 
 class TuNiuAll(Base):
@@ -212,6 +213,29 @@ class BFZY(Base):
     updateTime = Column(String(22))
     about = Column(LONGTEXT)
     others = Column(LONGTEXT)
+
+
+class SouLeWang(Base):
+    __tablename__ = "51sole"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    phone = Column(String(48))
+    representative = Column(String(40))
+    contact = Column(String(30))
+    products = Column(String(88))
+    enterpriseType = Column(String(32))
+    establishedTime = Column(String(22))
+    url = Column(String(66), index=True)
+    industry = Column(String(66))
+    postCodes = Column(String(10))
+    category = Column(String(48))
+    businessModel = Column(String(24))
+    siteUrl = Column(String(88))
+    location = Column(String(32))
+    registeredFunds = Column(String(64))
+    companyScale = Column(String(28))
+    annualTurnover = Column(LONGTEXT)
 
 
 Base.metadata.create_all(mysql_client)
