@@ -141,7 +141,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "anping/ch30"
+        self.jump = "anxi/ch10"
         self.status = False
         # self.browser = create_webdriver()
 
