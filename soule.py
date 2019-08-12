@@ -36,6 +36,7 @@ def second_run(func):
 class SouLe(object):
 
     url_home = "http://www.51sole.com/company/"
+    url_com = "http://union.51sole.com"
     fpa = re.compile(r"\d+")
 
     def __init__(self):
@@ -44,15 +45,23 @@ class SouLe(object):
         self.status = False
 
     def _provice(self):
-        r = self.session.get(self.url_home)
+        r = self.session.get(self.url_com)
         r.encoding = "utf-8"
         soup = BeautifulSoup(r.text, "lxml")
-        div = soup.find("div", class_="enterprise-info")
+        status = False
+        div = soup.find("div", class_="box w_c")
         mas = div.find_all("a")
         for a in mas:
-            d_u = "http:" + a.get("href")
-            print(d_u, a.text)
-            self._category(d_u, a.text)
+            if a.text == "北京":
+                status = True
+            if status:
+                self._category(a.get("href"), a.text)
+        # div = soup.find("div", class_="enterprise-info")
+        # mas = div.find_all("a")
+        # for a in mas:
+        #     d_u = "http:" + a.get("href")
+        #     print(d_u, a.text)
+        #     self._category(d_u, a.text)
 
     def _category(self, url, location):
         r = self.session.get(url)
@@ -189,6 +198,8 @@ class SouLe(object):
                         res[k.split("_")[-1]] = item[len(tem.get(k)):].strip()
         else:
             div = soup.find("div", {"id": "navcontact"})
+            if not div:
+                div = soup.find("div", {"id": "navcontact__1"})
             lis = div.find_all("li")
             temp = []
             for item in lis:
