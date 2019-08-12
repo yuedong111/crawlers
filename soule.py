@@ -90,10 +90,17 @@ class SouLe(object):
             self._list_item(d_u, category, location)
             count = count + 1
 
+    @staticmethod
+    def index_page(url):
+        s = url.split("/")
+        index = s[-2][1:]
+        return int(index)
+
     @second_run
     def _list_item(self, url, category, location):
-        time.sleep(0.3)
+        time.sleep(0.6)
         print("list url {}".format(url))
+        self.session.headers["Referer"] = url[:url.find("/p")] + "/p{}/".format(self.index_page(url)-1)
         r = self.session.get(url)
         r.encoding = "utf-8"
         soup = BeautifulSoup(r.text, "lxml")
