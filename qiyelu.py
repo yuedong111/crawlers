@@ -137,6 +137,8 @@ class ZHQYL(object):
         td = soup.find("td", {"width": "210", "align": "center", "valign": "top", "style": "PADDING-TOP: 7px"})
         if not td:
             td = soup.find("td", {"style": "word-break:break-all"})
+            if not td:
+                return {"others": "信息不存在"}
             res["about"] = td.text.strip()
             table = soup.find("table", {"border": "0", "cellpadding": "2", "cellspacing": "2", "width": "100%"})
             tds = table.find_all("td")
