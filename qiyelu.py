@@ -39,6 +39,8 @@ class ZHQYL(object):
 
     def __init__(self):
         self.session = create_session()
+        self.jump = "qyml/compzyzn123.html"
+        self.status = False
 
     def _category(self):
         r = self.session.get(self.url_home)
@@ -109,6 +111,10 @@ class ZHQYL(object):
             result["products"] = value[1]
             result["businessModel"] = value[2]
             result["url"] = key
+            if self.jump in key:
+                self.status = True
+            if not self.status:
+                continue
             with session_scope() as sess:
                 qy = sess.query(QYLu).filter(QYLu.url == key).first()
                 if not qy:
@@ -210,22 +216,23 @@ class ZHQYL(object):
                     r = self.session.get(d_u)
                     soup = BeautifulSoup(r.text, "lxml")
                     table = soup.find("table", {"width": "760", "border": "0", "cellspacing": "0", "cellpadding": "0"})
-                    td = table.find("td", class_="bady")
-                    res["about"] = td.text.strip()
-                    tds = table.find_all("td")
-                    temp = []
-                    for item in tds:
-                        temp.append(item.text)
-                    tem = locals()
-                    ot = ""
-                    for item in temp:
-                        for k in tem.keys():
-                            if "ssd" in k and tem.get(k) in item:
-                                res[k.split("_")[-1]] = item[len(tem.get(k)):].strip()
-                                break
-                        else:
-                            ot = ot + item + " "
-                    res["others"] = " ".join(ot.strip().split("\n"))
+                    if table:
+                        td = table.find("td", class_="bady")
+                        res["about"] = td.text.strip()
+                        tds = table.find_all("td")
+                        temp = []
+                        for item in tds:
+                            temp.append(item.text)
+                        tem = locals()
+                        ot = ""
+                        for item in temp:
+                            for k in tem.keys():
+                                if "ssd" in k and tem.get(k) in item:
+                                    res[k.split("_")[-1]] = item[len(tem.get(k)):].strip()
+                                    break
+                            else:
+                                ot = ot + item + " "
+                        res["others"] = " ".join(ot.strip().split("\n"))
         return res
 
     def start(self):
