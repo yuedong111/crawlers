@@ -7,6 +7,8 @@ from utils.sqlbackends import session_scope
 import re
 import json
 from requests.exceptions import ConnectionError
+import traceback
+from functools import wraps
 
 
 def reconnect(fn):
@@ -23,6 +25,28 @@ def reconnect(fn):
     return decorete
 
 
+def second_run(func):
+    count = 0
+
+    @wraps(func)
+    def decorate(*args, **kwargs):
+        nonlocal count
+        try:
+            res = func(*args, **kwargs)
+        except Exception as e:
+            print(traceback.print_exc())
+            while True:
+                time.sleep(2)
+                print("run again {} {}".format(count, args))
+                count = count + 1
+                if count >= 5:
+                    count = 0
+                    return {}
+                res = decorate(*args, **kwargs)
+                break
+        return res
+
+
 class BaFZY:
     url = "https://www.b2b168.com/chongqingqiye/"
     url_home = "https://www.b2b168.com/page-company.html"
@@ -30,7 +54,7 @@ class BaFZY:
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "beijingqiye/dongchengqu/andingmenjiedao/l-23.html"
+        self.jump = "tianjinqiye/hongqiaoqu/jieyuanjiedao/l-4.html"
         self.status = False
 
     def get_cate(self, url, locate):
@@ -85,7 +109,9 @@ class BaFZY:
             res["area"] = area
             name = a.get("title")
             res["enterpriseName"] = name
-            if not a.get("href").startswith("http"):
+            if not a.get("href").startswith("http") and not a.get("href").startswith("//"):
+                continue
+            elif not a.get("href").startswith("http"):
                 d_u = "https:" + a.get("href")
             else:
                 d_u = a.get("href")
@@ -107,6 +133,7 @@ class BaFZY:
                     sess.add(wg)
                     print(res)
 
+    @second_run
     def detail(self, url):
         print(url)
         time.sleep(0.7)
@@ -206,3 +233,4 @@ class BaFZY:
 
 if __name__ == "__main__":
     BaFZY().parse_provice()
+    # BaFZY().p_list("https://www.b2b168.com/tianjinqiye/hongqiaoqu/jieyuanjiedao/l-4.html", "天津芥园", "天津芥园")
