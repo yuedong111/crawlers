@@ -133,7 +133,6 @@ class BaFZY:
                     sess.add(wg)
                     print(res)
 
-    @second_run
     def detail(self, url):
         print(url)
         time.sleep(0.7)
@@ -233,4 +232,3 @@ class BaFZY:
 
 if __name__ == "__main__":
     BaFZY().parse_provice()
-    # BaFZY().p_list("https://www.b2b168.com/tianjinqiye/hongqiaoqu/jieyuanjiedao/l-4.html", "天津芥园", "天津芥园")
