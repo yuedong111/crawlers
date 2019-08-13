@@ -220,7 +220,7 @@ class SouLeWang(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     enterpriseName = Column(String(128), index=True)
     address = Column(String(228))
-    phone = Column(String(48))
+    phone = Column(String(128))
     representative = Column(String(40))
     contact = Column(String(30))
     products = Column(String(256))
@@ -235,7 +235,30 @@ class SouLeWang(Base):
     registerDate = Column(String(64))
     registeredFunds = Column(String(64))
     companyScale = Column(String(28))
-    annualTurnover = Column(LONGTEXT)
+    annualTurnover = Column(String(66))
+
+
+class QYLu(Base):
+    __tablename__ = "qiyelu"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    location = Column(String(28))
+    phone = Column(String(188))
+    representative = Column(String(40))
+    contact = Column(String(30))
+    products = Column(String(256))
+    enterpriseType = Column(String(32))
+    url = Column(String(66), index=True)
+    industry = Column(String(66))
+    category = Column(String(48))
+    businessModel = Column(String(24))
+    markets = Column(String(88))
+    about = Column(LONGTEXT)
+    establishedTime = Column(String(64))
+    registeredFunds = Column(String(64))
+    companyScale = Column(String(66))
+    others = Column(LONGTEXT)
 
 
 Base.metadata.create_all(mysql_client)
