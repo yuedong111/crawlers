@@ -35,7 +35,6 @@ def second_run(func):
 
 
 class QYHuangYe(object):
-
     url_home = "http://b2b.huangye88.com/region/"
 
     def __init__(self):
@@ -98,7 +97,7 @@ class QYHuangYe(object):
         if int(em.text) > 1000:
             total_pages = 50
         else:
-            total_pages = math.ceil(int(em.text)/20)
+            total_pages = math.ceil(int(em.text) / 20)
         count = 1
         while count < total_pages + 1:
             d_u = url + "pn{}/".format(count)
@@ -161,7 +160,7 @@ class QYHuangYe(object):
                 if "ss" in k and isinstance(tem.get(k), str) and tem.get(k) in item:
                     res[k.split("_")[-1]] = " ".join(item[len(tem.get(k)):].strip().split())
         if "phone" in res and ss_phone in res["phone"]:
-            res["phone"] = res["phone"][res["phone"].find(ss_phone)+len(ss_phone):]
+            res["phone"] = res["phone"][res["phone"].find(ss_phone) + len(ss_phone):]
         ul1 = soup.find("ul", class_="con-txt")
         lis = ul1.find_all("li")
         temp = []
@@ -188,7 +187,7 @@ class QYHuangYe(object):
             span = tr.find("span")
             key = span.text
             value = tr.text
-            value = value[value.find(key)+len(key):]
+            value = value[value.find(key) + len(key):]
             if "经营模式" in key:
                 res["businessModel"] = value
             elif "企业状态" in key:
@@ -196,6 +195,8 @@ class QYHuangYe(object):
             elif "主要客户群" in key:
                 res["customers"] = value
             elif "经营范围" in key:
+                if len(value) > 600:
+                    value = value[:600]
                 res["businessScope"] = value
             elif "公司邮编" in key:
                 res["postCodes"] = value
@@ -211,7 +212,6 @@ class QYHuangYe(object):
 
 if __name__ == "__main__":
     QYHuangYe().start()
-
 
 # HuangYe()._provice()
 # HuangYe()._cate("http://b2b.huangye88.com/guangdong/", "")
