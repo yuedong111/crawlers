@@ -7,6 +7,7 @@ from utils.sqlbackends import session_scope
 import traceback
 from functools import wraps
 import math
+from urllib.parse import urlparse
 
 
 def second_run(func):
@@ -136,7 +137,8 @@ class QYHuangYe(object):
         time.sleep(0.3)
         print("detail {}".format(url))
         res = {}
-        self.session.headers["Host"] = "jingyan2019.b2b.huangye88.com"
+        d = urlparse(url)
+        self.session.headers["Host"] = d.netloc
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find('ul', class_="l-txt none")
