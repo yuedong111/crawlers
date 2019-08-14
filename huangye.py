@@ -40,7 +40,8 @@ class QYHuangYe(object):
 
     def __init__(self):
         self.session = create_session()
-
+        self.jump = ""
+        self.status = False
         self.session.headers["Upgrade-Insecure-Requests"] = "1"
 
     def _provice(self):
@@ -80,6 +81,10 @@ class QYHuangYe(object):
         for a in mas:
             temp.append((a.get("href"), a.text))
         for item in temp:
+            if self.jump in item[0]:
+                self.status = True
+            if not self.status:
+                continue
             self._total_pages(*item)
 
     @second_run
