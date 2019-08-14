@@ -39,7 +39,7 @@ class QYHuangYe(object):
 
     def __init__(self):
         self.session = create_session()
-        self.jump = "chongqing/LEDteshuzhaomingdeng12773/"
+        self.jump = "chongqing/qiegeshebei7344/"
         self.status = False
         self.session.headers["Upgrade-Insecure-Requests"] = "1"
 
@@ -66,6 +66,7 @@ class QYHuangYe(object):
         for div in divs:
             mas = div.find_all("a")
             for a in mas:
+                print("second cate {}".format(a.get("href")))
                 self.seconde_cate(a.get("href"), a.text)
 
     def seconde_cate(self, url, category):
@@ -74,23 +75,26 @@ class QYHuangYe(object):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", class_="box")
-        mas = div.find_all("a")
         temp = []
         temp.append((url, category))
-        for a in mas:
-            temp.append((a.get("href"), a.text))
+        if not div.has_attr("style"):
+            mas = div.find_all("a")
+            for a in mas:
+                temp.append((a.get("href"), a.text))
         for item in temp:
-            if self.jump in item[0]:
-                self.status = True
-            if not self.status:
-                continue
-            self._total_pages(*item)
+            if item:
+                if self.jump in item[0]:
+                    self.status = True
+                if not self.status:
+                    continue
+                self._total_pages(*item)
 
     @second_run
     def _total_pages(self, url, category):
         time.sleep(0.3)
         self.session.headers["Host"] = "b2b.huangye88.com"
         r = self.session.get(url)
+        print("total pages {}".format(url))
         soup = BeautifulSoup(r.text, "lxml")
         span = soup.find("span", {"style": "float:right;padding-right:10px"})
         em = span.find("em")
@@ -181,7 +185,7 @@ class QYHuangYe(object):
         divv = soup.find_all("div", class_="r-content")
         div = divv[-1]
         p = div.find("p", class_="txt")
-        if p:
+        if not p:
             p = divv[-2].find("p", class_="txt")
             res["about"] = p.text.strip()
         table = div.find("table", {"border": "0", "cellspacing": "1"})
@@ -202,7 +206,7 @@ class QYHuangYe(object):
             if "经营模式" in key:
                 res["businessModel"] = value
             elif "企业状态" in key:
-                res["status"] = value
+                res["status"] = value.strip()[:6]
             elif "主要客户群" in key:
                 if len(value) > 66:
                     value = value[:66]
@@ -229,7 +233,7 @@ if __name__ == "__main__":
 # HuangYe()._provice()
 # HuangYe()._cate("http://b2b.huangye88.com/guangdong/", "")
 # HuangYe().seconde_cate("http://b2b.huangye88.com/guangdong/jixie/", "jixie")
-# HuangYe()._total_pages("http://b2b.huangye88.com/guangdong/jixie/")
+# QYHuangYe()._total_pages("http://b2b.huangye88.com/chongqing/gongkong/", "")
 # HuangYe()._p_list("http://b2b.huangye88.com/guangdong/jixie/")
 # QYHuangYe()._detail("http://kejin04.b2b.huangye88.com/company_detail.html")
 
