@@ -39,7 +39,7 @@ class QYHuangYe(object):
 
     def __init__(self):
         self.session = create_session()
-        self.jump = ""
+        self.jump = "chongqing/LEDteshuzhaomingdeng12773/"
         self.status = False
         self.session.headers["Upgrade-Insecure-Requests"] = "1"
 
@@ -193,6 +193,8 @@ class QYHuangYe(object):
             elif "企业状态" in key:
                 res["status"] = value
             elif "主要客户群" in key:
+                if len(value) > 66:
+                    value = value[:66]
                 res["customers"] = value
             elif "经营范围" in key:
                 if len(value) > 600:
