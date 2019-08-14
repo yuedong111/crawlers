@@ -243,7 +243,7 @@ class QYLu(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     enterpriseName = Column(String(128), index=True)
     address = Column(String(228))
-    location = Column(String(28))
+    location = Column(String(66))
     phone = Column(String(188))
     representative = Column(String(40))
     contact = Column(String(30))
@@ -259,6 +259,28 @@ class QYLu(Base):
     registeredFunds = Column(String(64))
     companyScale = Column(String(66))
     others = Column(LONGTEXT)
+
+
+class HuangYe(Base):
+    __tablename__ = "huangye88"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    postCodes = Column(String(12))
+    phone = Column(String(188))
+    contact = Column(String(30))
+    location = Column(String(66))
+    products = Column(String(256))
+    enterpriseType = Column(String(32))
+    url = Column(String(66), index=True)
+    industry = Column(String(66))
+    category = Column(String(48))
+    businessModel = Column(String(24))
+    status = Column(String(12))
+    customers = Column(String(66))
+    establishedTime = Column(String(64))
+    businessScope = Column(String(128))
+    about = Column(LONGTEXT)
 
 
 Base.metadata.create_all(mysql_client)
