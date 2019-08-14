@@ -103,6 +103,8 @@ class QYHuangYe(object):
     @second_run
     def _p_list(self, url, category):
         time.sleep(0.3)
+        if "pn1/" in url:
+            url = url[:url.find("pn1/")]
         print("list url {}".format(url))
         self.session.headers["Host"] = "b2b.huangye88.com"
         r = self.session.get(url)
@@ -142,6 +144,9 @@ class QYHuangYe(object):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find('ul', class_="l-txt none")
+        if not ul:
+            res["about"] = "该企业不存在"
+            return res
         temp = ul.text.split()
         ss_contact = "联系人："
         ss_phone = "手机："
@@ -150,7 +155,7 @@ class QYHuangYe(object):
             for k in tem.keys():
                 if "ss" in k and isinstance(tem.get(k), str) and tem.get(k) in item:
                     res[k.split("_")[-1]] = " ".join(item[len(tem.get(k)):].strip().split())
-        if ss_phone in res["phone"]:
+        if "phone" in res and ss_phone in res["phone"]:
             res["phone"] = res["phone"][res["phone"].find(ss_phone)+len(ss_phone):]
         ul1 = soup.find("ul", class_="con-txt")
         lis = ul1.find_all("li")
@@ -160,6 +165,8 @@ class QYHuangYe(object):
         ssd_enterpriseType = "企业类型："
         ssd_location = "所在地："
         ssd_industry = "主营行业："
+        ssd_registerFunds = "注册资金："
+        ssd_representative = "企业法人："
         ssd_establishedTime = "成立时间："
         ssd_products = "主营产品："
         tem = locals()

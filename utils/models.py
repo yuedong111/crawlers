@@ -268,7 +268,9 @@ class HuangYe(Base):
     address = Column(String(228))
     postCodes = Column(String(12))
     phone = Column(String(188))
+    representative = Column(String(40))
     contact = Column(String(30))
+    registeredFunds = Column(String(64))
     location = Column(String(66))
     products = Column(String(256))
     enterpriseType = Column(String(32))
@@ -279,7 +281,7 @@ class HuangYe(Base):
     status = Column(String(12))
     customers = Column(String(66))
     establishedTime = Column(String(64))
-    businessScope = Column(String(128))
+    businessScope = Column(String(666))
     about = Column(LONGTEXT)
 
 
