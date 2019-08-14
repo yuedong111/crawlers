@@ -20,6 +20,9 @@ def second_run(func):
         try:
             res = func(*args, **kwargs)
         except Exception as e:
+            if str(e) == "403 forbidden":
+                print("403forbidden 15分钟后再试")
+                time.sleep(60*15)
             print(traceback.print_exc())
             while True:
                 time.sleep(5)
@@ -96,6 +99,8 @@ class ShunQiCrawl:
             "Cookie"] = "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085,1564628740; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564724029"
         r = self.session.get(url)
         print(url)
+        if "您访问的太快了" in r.text:
+            raise Exception("403 forbidden")
         soup = BeautifulSoup(r.text, "lxml")
         page = soup.find("div", class_="pages")
         try:
@@ -126,6 +131,8 @@ class ShunQiCrawl:
         if r.status_code == 500:
             print("内部错误")
             return
+        if "您访问的太快了" in r.text:
+            raise Exception("403 forbidden")
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find("ul", class_="companylist")
         lis = ul.find_all("li")
@@ -160,6 +167,8 @@ class ShunQiCrawl:
             r = self.session.get(url)
         except:
             r = self.session.get(url)
+        if "您访问的太快了" in r.text:
+            raise Exception("403 forbidden")
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", {"id": "aboutus"})
         cdiv = div.find("div", {"id": "aboutuscontent"})
