@@ -41,7 +41,7 @@ class SouLe(object):
 
     def __init__(self):
         self.session = create_session()
-        self.jump = ""
+        self.jump = "shanghai-secondhand/p41"
         self.status = False
 
     def _provice(self):
@@ -77,6 +77,7 @@ class SouLe(object):
     @second_run
     def _pages(self, url, category, location):
         print("total {}".format(url))
+        time.sleep(0.2)
         r = self.session.get(url)
         r.encoding = "utf-8"
         soup = BeautifulSoup(r.text, "lxml")
@@ -226,10 +227,17 @@ class SouLe(object):
             r = self.session.get(d_u)
             soup = BeautifulSoup(r.text, "lxml")
             div = soup.find("div", {"id": "companyinfo"})
-            lis = div.find_all("li")
-            temp = []
-            for li in lis:
-                temp.append(" ".join(li.text.strip().split()))
+            if not div:
+                div = soup.find("div", {"id": "pro_info"})
+                dls = div.find_all("dl", class_="border-t")
+                temp = []
+                for dl in dls:
+                    temp.append(" ".join(dl.text.strip().split()))
+            else:
+                lis = div.find_all("li")
+                temp = []
+                for li in lis:
+                    temp.append(" ".join(li.text.strip().split()))
             ssd_enterpriseType = "企业类型："
             ssd_businessModel = "经营模式："
             ssd_location = "所在地区："
