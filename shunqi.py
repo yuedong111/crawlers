@@ -17,6 +17,7 @@ def second_run(func):
     @wraps(func)
     def decorate(*args, **kwargs):
         nonlocal count
+        count = 0
         try:
             res = func(*args, **kwargs)
         except Exception as e:
@@ -29,8 +30,8 @@ def second_run(func):
                 print("run again {} {}".format(count, args))
                 count = count + 1
                 if 2 < count < 5:
-                    time.sleep(600*3)
                     print("半小时后重试")
+                    time.sleep(600*3)
                 elif count >= 5:
                     count = 0
                     return {}
