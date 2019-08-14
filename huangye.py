@@ -26,7 +26,7 @@ def second_run(func):
                 count = count + 1
                 if count >= 5:
                     count = 0
-                    return "too many retrys"
+                    return {}
                 res = decorate(*args, **kwargs)
                 break
         return res
@@ -178,16 +178,27 @@ class QYHuangYe(object):
             for k in tem.keys():
                 if "ssd" in k and tem.get(k) in item:
                     res[k.split("_")[-1]] = item[len(tem.get(k)):].strip()
-        div = soup.find_all("div", class_="r-content")[-1]
+        divv = soup.find_all("div", class_="r-content")
+        div = divv[-1]
         p = div.find("p", class_="txt")
-        res["about"] = p.text.strip()
+        if p:
+            p = divv[-2].find("p", class_="txt")
+            res["about"] = p.text.strip()
         table = div.find("table", {"border": "0", "cellspacing": "1"})
+        if not table:
+            table = div.find("table", {"cellspacing": "1"})
         trs = table.find_all("tr")
         for tr in trs:
             span = tr.find("span")
-            key = span.text
-            value = tr.text
-            value = value[value.find(key) + len(key):]
+            if span:
+                key = span.text
+                value = tr.text
+                value = value[value.find(key) + len(key):]
+            st = tr.find("strong")
+            if st:
+                key = st.text
+                value = tr.text.strip()
+                value = value[value.find(key) + len(key):]
             if "经营模式" in key:
                 res["businessModel"] = value
             elif "企业状态" in key:
@@ -220,4 +231,5 @@ if __name__ == "__main__":
 # HuangYe().seconde_cate("http://b2b.huangye88.com/guangdong/jixie/", "jixie")
 # HuangYe()._total_pages("http://b2b.huangye88.com/guangdong/jixie/")
 # HuangYe()._p_list("http://b2b.huangye88.com/guangdong/jixie/")
-# HuangYe()._detail("http://jingyan2019.b2b.huangye88.com/company_detail.html")
+# QYHuangYe()._detail("http://kejin04.b2b.huangye88.com/company_detail.html")
+
