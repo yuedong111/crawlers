@@ -8,13 +8,41 @@ from utils.models import ShunQi
 from utils.sqlbackends import session_scope
 import random
 import traceback
+from functools import wraps
+
+
+def second_run(func):
+    count = 0
+
+    @wraps(func)
+    def decorate(*args, **kwargs):
+        nonlocal count
+        try:
+            res = func(*args, **kwargs)
+        except Exception as e:
+            print(traceback.print_exc())
+            while True:
+                time.sleep(5)
+                print("run again {} {}".format(count, args))
+                count = count + 1
+                if 2 < count < 5:
+                    time.sleep(600*3)
+                    print("半小时后重试")
+                elif count >= 5:
+                    count = 0
+                    return {}
+                res = decorate(*args, **kwargs)
+                break
+        return res
+
+    return decorate
 
 
 class ShunQiCrawl:
     url_home = "http://chongqing.11467.com"
 
     def __init__(self):
-        self.jump = "zhongxian/dongxizhen/pn17"
+        self.jump = "hechuan"
         self.status = False
         self.areastatus = False
         self.session = create_shunqi_session()
@@ -55,12 +83,14 @@ class ShunQiCrawl:
             res["registeredCapital"] = ss[index + len(s3):].strip()
         return res
 
+    @second_run
     def total_pages(self, url, area):
         temp = self.jump.split("/")[0]
         if temp not in url:
             self.areastatus = True
         if not self.areastatus:
             return
+        time.sleep(1)
         self.session.headers["Host"] = "chongqing.11467.com"
         self.session.headers[
             "Cookie"] = "Hm_lvt_819e30d55b0d1cf6f2c4563aa3c36208=1564535925,1564554085,1564628740; Hm_lpvt_819e30d55b0d1cf6f2c4563aa3c36208=1564724029"
@@ -84,6 +114,7 @@ class ShunQiCrawl:
             sa = self.url_list(d_u, area)
             count = count + 1
 
+    @second_run
     def url_list(self, url, area):
         print("list url {}".format(url))
         time.sleep(random.uniform(1.5, 3))
@@ -119,6 +150,7 @@ class ShunQiCrawl:
                     sess.add(sq)
                     print(res)
 
+    @second_run
     def detail(self, url):
         print("detail url {}".format(url))
         time.sleep(random.uniform(2, 4))
