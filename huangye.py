@@ -165,7 +165,7 @@ class QYHuangYe(object):
         ssd_enterpriseType = "企业类型："
         ssd_location = "所在地："
         ssd_industry = "主营行业："
-        ssd_registerFunds = "注册资金："
+        ssd_registeredFunds = "注册资金："
         ssd_representative = "企业法人："
         ssd_establishedTime = "成立时间："
         ssd_products = "主营产品："
