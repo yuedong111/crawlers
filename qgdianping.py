@@ -141,7 +141,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "anxi/ch10"
+        self.jump = "anduo/ch45"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -337,6 +337,8 @@ class DianPing:
             return
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
+        if "没有找到符合条件的商户" in r.text:
+            return
         if "ch55" in url:
             li = soup.find("li", class_="t-item-box t-district J_li")
             if not li:
