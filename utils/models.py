@@ -285,5 +285,29 @@ class HuangYe(Base):
     about = Column(LONGTEXT)
 
 
+class CnTrade(Base):
+    __tablename__ = "cntrade"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    postCodes = Column(String(12))
+    phoneimg = Column(String(512))
+    contact = Column(String(30))
+    registerDate = Column(String(20))
+    registeredFunds = Column(String(64))
+    location = Column(String(66))
+    companyScale = Column(String(66))
+    url = Column(String(66), index=True)
+    products = Column(String(256))
+    enterpriseType = Column(String(32))
+    siteUrl = Column(String(128))
+    industry = Column(String(256))
+    category = Column(String(48))
+    businessModel = Column(String(24))
+    businessScope = Column(String(666))
+    about = Column(LONGTEXT)
+
+
 Base.metadata.create_all(mysql_client)
 Base.metadata.create_all(mysql_client_remote)
+
