@@ -8,7 +8,8 @@ import traceback
 from functools import wraps
 import re
 from collections import OrderedDict
-
+import time
+from urllib.parse import urlparse
 
 def second_run(func):
     count = 0
@@ -24,6 +25,8 @@ def second_run(func):
                 time.sleep(2)
                 print("run again {} {}".format(count, args))
                 count = count + 1
+                if 2 < count < 5:
+                    time.sleep(5)
                 if count >= 5:
                     return {}
                 res = decorate(*args, **kwargs)
@@ -39,6 +42,14 @@ class Trades(object):
 
     def __init__(self):
         self.session = create_session()
+        self.session.headers["Upgrade-Insecure-Requests"] = "1"
+        self.session.headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+        self.session.headers["Accept-Encoding"] = "gzip, deflate"
+        self.session.headers["Accept-Language"] = "zh-CN,zh;q=0.9"
+        self.session.headers["Cache-Control"] = "max-age=0"
+        self.session.headers["Connection"] = "keep-alive"
+        self.cookies = "DOT_mysqlrw=2; Hm_lvt_abb44720aa6580c1c49b6ffff8216dab=1565771047,1565832018; DOT_last_search=1565848171; Hm_lpvt_abb44720aa6580c1c49b6ffff8216dab={}"
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time()-2))
         self.jump = ""
         self.status = False
 
@@ -56,7 +67,9 @@ class Trades(object):
 
     @second_run
     def _seconde_cate(self, url, category):
-        time.sleep(0.5)
+        time.sleep(1)
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time() - 2))
+        self.session.headers["Host"] = "www.cntrades.com"
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find("ul", class_="class-name-item")
@@ -79,6 +92,7 @@ class Trades(object):
     def _total_pages(self, url, category):
         time.sleep(0.7)
         print("total {}".format(url))
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time() - 2))
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         cite = soup.find("cite")
@@ -98,10 +112,11 @@ class Trades(object):
 
     @second_run
     def _p_list(self, url, category):
-        time.sleep(0.5)
+        time.sleep(1)
         print("list {}".format(url))
         res = {}
         res["category"] = category
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time()))
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         divv = soup.find("div", class_="left_box")
@@ -133,13 +148,19 @@ class Trades(object):
 
     @second_run
     def _detail(self, url):
-        time.sleep(0.3)
+        time.sleep(1)
+        d = urlparse(url)
         print("detail {}".format(url))
         res = {}
         intro = url + "/introduce/"
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time()))
+        self.session.headers["Host"] = d.netloc
         r = self.session.get(intro)
         soup = BeautifulSoup(r.text, "lxml")
+        # print(r.text)
         div = soup.find("div", {"id": "content"})
+        if not div:
+            div = soup.find("div", class_="lh18 px13 pd10")
         res["about"] = div.text.strip()
         div = soup.find("div", class_="px13 lh18")
         trs = div.find_all("tr")
@@ -169,7 +190,7 @@ class Trades(object):
             for k in tem.keys():
                 if "ssd" in k and tem.get(k) in item:
                     res[k.split("_")[-1]] = item[len(tem.get(k)):].strip()
-        time.sleep(0.2)
+        time.sleep(1)
         conurl = url + "/contact/"
         r = self.session.get(conurl)
         soup = BeautifulSoup(r.text, "lxml")
@@ -193,6 +214,8 @@ class Trades(object):
         for img in imgs:
             imgt = imgt + img.get("src") + " "
         res["phoneimg"] = imgt
+        if not res["phoneimg"]:
+            print("meiyou lianxi fangshi {}".format(ctemp))
         return res
 
     def start(self):
@@ -209,4 +232,4 @@ if __name__ == "__main__":
 # Trades()._seconde_cate("http://www.cntrades.com/company/list-2597.html")
 # Trades()._total_pages("http://www.cntrades.com/company/list-2597.html", "")
 # Trades()._p_list("http://www.cntrades.com/company/list-2744-4.html")
-# Trades()._detail("http://www.cntrades.com/shop/likousisports")
+# Trades()._detail("http://xk12345.cntrades.com")
