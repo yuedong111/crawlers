@@ -20,6 +20,8 @@ def second_run(func):
         try:
             res = func(*args, **kwargs)
         except Exception as e:
+            if str(e) == "404":
+                time.sleep(3)
             print(traceback.print_exc())
             while True:
                 time.sleep(2)
@@ -48,8 +50,8 @@ class Trades(object):
         self.session.headers["Accept-Language"] = "zh-CN,zh;q=0.9"
         self.session.headers["Cache-Control"] = "max-age=0"
         self.session.headers["Connection"] = "keep-alive"
-        self.cookies = "DOT_mysqlrw=2; Hm_lvt_abb44720aa6580c1c49b6ffff8216dab=1565771047,1565832018; DOT_last_search=1565848171; Hm_lpvt_abb44720aa6580c1c49b6ffff8216dab={}"
-        self.session.headers["Cookie"] = self.cookies.format(int(time.time()-2))
+        self.cookies = "DOT_mysqlrw=2; Hm_lvt_abb44720aa6580c1c49b6ffff8216dab=1565771047,1565832018; DOT_last_search={}; Hm_lpvt_abb44720aa6580c1c49b6ffff8216dab={}"
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time())-2)
         self.jump = ""
         self.status = False
 
@@ -68,7 +70,7 @@ class Trades(object):
     @second_run
     def _seconde_cate(self, url, category):
         time.sleep(1)
-        self.session.headers["Cookie"] = self.cookies.format(int(time.time() - 2))
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time())-2)
         self.session.headers["Host"] = "www.cntrades.com"
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
@@ -92,7 +94,7 @@ class Trades(object):
     def _total_pages(self, url, category):
         time.sleep(0.7)
         print("total {}".format(url))
-        self.session.headers["Cookie"] = self.cookies.format(int(time.time() - 2))
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time())-2)
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         cite = soup.find("cite")
@@ -116,10 +118,14 @@ class Trades(object):
         print("list {}".format(url))
         res = {}
         res["category"] = category
-        self.session.headers["Cookie"] = self.cookies.format(int(time.time()))
+        self.session.headers["Host"] = "www.cntrades.com"
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time())-2)
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         divv = soup.find("div", class_="left_box")
+        if not divv:
+            if "404 Not Found" in r.text:
+                raise Exception("404")
         divs = divv.find_all("div", class_="list")
         for div in divs:
             lis = div.find_all("li")
@@ -143,8 +149,8 @@ class Trades(object):
                 if not cns:
                     resu = self._detail(res["url"])
                     res.update(resu)
-                cn = CnTrade(**res)
-                sess.add(cn)
+                    cn = CnTrade(**res)
+                    sess.add(cn)
 
     @second_run
     def _detail(self, url):
@@ -153,11 +159,10 @@ class Trades(object):
         print("detail {}".format(url))
         res = {}
         intro = url + "/introduce/"
-        self.session.headers["Cookie"] = self.cookies.format(int(time.time()))
+        self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time()))
         self.session.headers["Host"] = d.netloc
         r = self.session.get(intro)
         soup = BeautifulSoup(r.text, "lxml")
-        # print(r.text)
         div = soup.find("div", {"id": "content"})
         if not div:
             div = soup.find("div", class_="lh18 px13 pd10")
@@ -214,8 +219,6 @@ class Trades(object):
         for img in imgs:
             imgt = imgt + img.get("src") + " "
         res["phoneimg"] = imgt
-        if not res["phoneimg"]:
-            print("meiyou lianxi fangshi {}".format(ctemp))
         return res
 
     def start(self):
@@ -231,5 +234,5 @@ if __name__ == "__main__":
 # Trades()._cate()
 # Trades()._seconde_cate("http://www.cntrades.com/company/list-2597.html")
 # Trades()._total_pages("http://www.cntrades.com/company/list-2597.html", "")
-# Trades()._p_list("http://www.cntrades.com/company/list-2744-4.html")
+# Trades()._p_list("http://www.cntrades.com/company/list-2741-2.html", "运动鞋")
 # Trades()._detail("http://xk12345.cntrades.com")
