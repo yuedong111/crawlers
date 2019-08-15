@@ -30,6 +30,7 @@ def second_run(func):
                 if 2 < count < 5:
                     time.sleep(5)
                 if count >= 5:
+                    count = 0
                     return {}
                 res = decorate(*args, **kwargs)
                 break
