@@ -321,7 +321,7 @@ class MetalInc(Base):
     companyScale = Column(String(66))
     url = Column(String(66), index=True)
     products = Column(String(256))
-    enterpriseType = Column(String(32))
+    enterpriseType = Column(String(66))
     industry = Column(String(256))
     businessModel = Column(String(24))
     businessScope = Column(String(666))
