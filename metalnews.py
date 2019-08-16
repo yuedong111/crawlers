@@ -19,7 +19,7 @@ def second_run(func):
         try:
             res = func(*args, **kwargs)
         except Exception as e:
-            print(e)
+            print(traceback.print_exc())
             while True:
                 time.sleep(2)
                 print("run again {} {}".format(count, args))
@@ -48,7 +48,7 @@ class MetalNews(object):
         self.session.headers["Cache-Control"] = "max-age=0"
         self.session.headers["Connection"] = "keep-alive"
         self.session.headers["Host"] = "www.metalnews.cn"
-        self.jump = "search-htm-areaid-2-page-1392.html"
+        self.jump = "search-htm-areaid-3-page-48.html"
         self.status = False
 
     def _province(self):
@@ -83,7 +83,6 @@ class MetalNews(object):
 
     @second_run
     def _plist(self, url):
-        res = {}
         time.sleep(0.2)
         print("list {}".format(url))
         r = self.session.get(url)
@@ -91,12 +90,15 @@ class MetalNews(object):
         divt = soup.find("div", class_="left_box")
         divs = divt.find_all("div", class_="list")
         for div in divs:
+            res = {}
             lis = div.find_all("li")
             for li in lis:
                 a = li.find("a")
                 if a:
                     res["url"] = a.get("href")
                     tem = li.text.split()
+                    if not tem:
+                        continue
                     res["enterpriseName"] = tem[0]
                 else:
                     if "主营：" in li.text:
