@@ -36,7 +36,6 @@ def second_run(func):
 
 
 class MetalNews(object):
-
     url_home = "http://www.metalnews.cn/company/"
 
     def __init__(self):
@@ -49,6 +48,8 @@ class MetalNews(object):
         self.session.headers["Cache-Control"] = "max-age=0"
         self.session.headers["Connection"] = "keep-alive"
         self.session.headers["Host"] = "www.metalnews.cn"
+        self.jump = "search-htm-areaid-2-page-1392.html"
+        self.status = False
 
     def _province(self):
         r = self.session.get(self.url_home)
@@ -72,6 +73,11 @@ class MetalNews(object):
         count = 1
         while count < total_pages + 1:
             d_u = url.split(".htm")[0] + "-page-{}.html".format(count)
+            if self.jump in d_u:
+                self.status = True
+            if not self.status:
+                count = count + 1
+                continue
             self._plist(d_u)
             count = count + 1
 
@@ -175,7 +181,7 @@ class MetalNews(object):
                         temp.append(li.text)
             temp.extend(temp1)
             dd_contact = "联系人："
-            dd_phone = ["手机：", "电话："]
+            dd_phone = ["手机：", "电话：", "传真："]
             dd_enterpriseType = "公司类型："
             dd_businessScope = "经营范围："
             dd_location = "所 在 地："
@@ -189,19 +195,21 @@ class MetalNews(object):
             for item in temp:
                 for k in tem.keys():
                     if "dd" in k and isinstance(tem.get(k), str) and tem.get(k) in item:
-                        res[k.split("_")[-1]] = " ".join(item[item.find(tem.get(k))+len(tem.get(k)):].strip().split())
-                    elif "dd" in k and isinstance(tem.get(k), list):
+                        if k.split("_")[-1] not in res:
+                            res[k.split("_")[-1]] = " ".join(
+                                item[item.find(tem.get(k)) + len(tem.get(k)):].strip().split())
+                    if "dd" in k and isinstance(tem.get(k), list):
                         for tt in tem.get(k):
                             if tt in item:
                                 tem1 = tem1 + item + " "
-                        res["phone"] = tem1
+                        if "phone" not in res or not res["phone"]:
+                            res["phone"] = tem1
         return res
 
 
 if __name__ == "__main__":
     MetalNews()._province()
 
-
 # MetalNews()._province()
 # MetalNews()._plist("http://www.metalnews.cn/company/search-htm-areaid-1.html")
-# MetalNews()._detail("http://www.metalnews.cn/com/smt22046/")
+# MetalNews()._detail("http://www.metalnews.cn/com/shby1171/")
