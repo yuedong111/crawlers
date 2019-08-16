@@ -189,7 +189,7 @@ class MetalNews(object):
             for item in temp:
                 for k in tem.keys():
                     if "dd" in k and isinstance(tem.get(k), str) and tem.get(k) in item:
-                        res[k.split("_")[-1]] = " ".join(item[len(tem.get(k)):].strip().split())
+                        res[k.split("_")[-1]] = " ".join(item[item.find(tem.get(k))+len(tem.get(k)):].strip().split())
                     elif "dd" in k and isinstance(tem.get(k), list):
                         for tt in tem.get(k):
                             if tt in item:
@@ -204,4 +204,4 @@ if __name__ == "__main__":
 
 # MetalNews()._province()
 # MetalNews()._plist("http://www.metalnews.cn/company/search-htm-areaid-1.html")
-# MetalNews()._detail("http://www.metalnews.cn/com/mingyu77/")
+# MetalNews()._detail("http://www.metalnews.cn/com/smt22046/")
