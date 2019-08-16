@@ -1,5 +1,5 @@
 from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai, XieCheng, DZDianPingCQ, TuNiu, ShunQi, \
-    WGQY, TuNiuAll, BFZY, DZDianPing, BFZYCQ, SouLeWang, QYLu, HuangYe
+    WGQY, TuNiuAll, BFZY, DZDianPing, BFZYCQ, SouLeWang, QYLu, HuangYe, CnTrade, MetalInc
 from utils.sqlbackends import session_scope, session_scope_remote
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -54,6 +54,8 @@ query_map = {"MeiTuanShop": "select id from meiTuanShop where shop='{shop}' and 
              "SouLeWang": "select id from 51sole where url = '{url}'",
              "QYLu": "select id from qiyelu where url = '{url}'",
              "HuangYe": "select id from huangye88 where url = '{url}'",
+             "CnTrade":  "select id from cntrade where url = '{url}'",
+             "MetalInc": "select id from metalinc where url = '{url}'",
              }
 
 
