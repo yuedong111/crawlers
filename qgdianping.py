@@ -141,7 +141,7 @@ class DianPing:
     def __init__(self):
         self.session = create_dianping_session()
         self.url_home = "http://www.dianping.com"
-        self.jump = "anduo/ch45"
+        self.jump = "beijing/ch30"
         self.status = False
         # self.browser = create_webdriver()
 
@@ -225,7 +225,7 @@ class DianPing:
                 res["area"] = area
                 a = item.find("a", {"data-hippo-type": "shop"})
                 res["shop"] = a["title"]
-                detail_url = a["href"]
+                detail_url = a.get("href")
                 res["url"] = detail_url
                 d = item.find("div", class_="operate J_operate Hide")
                 if d:
