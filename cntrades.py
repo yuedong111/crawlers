@@ -22,10 +22,11 @@ def second_run(func):
         except Exception as e:
             if str(e) == "404":
                 time.sleep(3)
-            if str(e) == "too fast":
+            elif str(e) == "too fast":
                 print("提示太快，6秒后重试")
                 time.sleep(4)
-            print(traceback.print_exc())
+            else:
+                print(traceback.print_exc())
             while True:
                 time.sleep(2)
                 print("run again {} {}".format(count, args))
@@ -56,7 +57,7 @@ class Trades(object):
         self.session.headers["Connection"] = "keep-alive"
         self.cookies = "DOT_mysqlrw=2; Hm_lvt_abb44720aa6580c1c49b6ffff8216dab=1565771047,1565832018; DOT_last_search={}; Hm_lpvt_abb44720aa6580c1c49b6ffff8216dab={}"
         self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time())-2)
-        self.jump = "list-2794"
+        self.jump = "list-2796"
         self.status = False
 
     def _cate(self):
