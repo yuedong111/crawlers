@@ -22,6 +22,9 @@ def second_run(func):
         except Exception as e:
             if str(e) == "404":
                 time.sleep(3)
+            if str(e) == "too fast":
+                print("提示太快，6秒后重试")
+                time.sleep(4)
             print(traceback.print_exc())
             while True:
                 time.sleep(2)
@@ -53,7 +56,7 @@ class Trades(object):
         self.session.headers["Connection"] = "keep-alive"
         self.cookies = "DOT_mysqlrw=2; Hm_lvt_abb44720aa6580c1c49b6ffff8216dab=1565771047,1565832018; DOT_last_search={}; Hm_lpvt_abb44720aa6580c1c49b6ffff8216dab={}"
         self.session.headers["Cookie"] = self.cookies.format(int(time.time())-1, int(time.time())-2)
-        self.jump = ""
+        self.jump = "list-2794"
         self.status = False
 
     def _cate(self):
@@ -76,6 +79,9 @@ class Trades(object):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         ul = soup.find("ul", class_="class-name-item")
+        if not ul:
+            if "是不是太快了？" in r.text:
+                raise Exception("too fast")
         mas = ul.find_all("a")
         temp = []
         temp.append((url, category))
@@ -99,6 +105,9 @@ class Trades(object):
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         cite = soup.find("cite")
+        if not cite:
+            if "是不是太快了？" in r.text:
+                raise Exception("too fast")
         total_pages = cite.text.split("/")[-1][:-1]
         total_pages = int(total_pages)
         count = 1
@@ -127,6 +136,8 @@ class Trades(object):
         if not divv:
             if "404 Not Found" in r.text:
                 raise Exception("404")
+            if "是不是太快了？" in r.text:
+                raise Exception("too fast")
         divs = divv.find_all("div", class_="list")
         for div in divs:
             lis = div.find_all("li")
