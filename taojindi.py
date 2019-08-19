@@ -152,7 +152,7 @@ class TaoJinDi(object):
         ss_address = "地址："
         ss_products = "主营产品："
         tem = locals()
-        tem1 = ""
+        tem2 = {}
         for item in temp:
             for k in tem.keys():
                 if "ss" in k and isinstance(tem.get(k), str) and tem.get(k) in item:
@@ -160,8 +160,8 @@ class TaoJinDi(object):
                 elif "ss" in k and isinstance(tem.get(k), list):
                     for tt in tem.get(k):
                         if tt in item:
-                            tem1 = tem1 + item + " "
-                    res["phone"] = tem1
+                            tem2[item] = tt
+                    res["phone"] = " ".join([k for k in tem2.keys()])
         return res
 
 
@@ -169,8 +169,3 @@ if __name__ == "__main__":
     TaoJinDi()._province()
 
 
-# TaoJinDi()._province()
-# TaoJinDi()._sec_cate("http://hy.taojindi.com/region/beijing1/")
-# TaoJinDi()._tatal_pages("http://hy.taojindi.com/region/beijing1/")
-# TaoJinDi()._plist("http://hy.taojindi.com/region/beijing1/")
-# TaoJinDi()._detail("http://hy.taojindi.com/scompany441941/")
