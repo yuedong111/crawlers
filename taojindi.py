@@ -113,8 +113,13 @@ class TaoJinDi(object):
                     res["address"] = item[len("地址：" ):]
                 elif "主营产品：" in item:
                     res["products"] = item[len("主营产品："):]
-            print(d_u)
-            # print(res)
+            with session_scope() as sess:
+                cns = sess.query(TaoJin).filter(TaoJin.url == res["url"]).first()
+                if not cns:
+                    resu = self._detail(res["url"])
+                    res.update(resu)
+                    cn = TaoJin(**res)
+                    sess.add(cn)
 
     @second_run
     def _detail(self, url):
@@ -157,9 +162,12 @@ class TaoJinDi(object):
         return res
 
 
+if __name__ == "__main__":
+    TaoJinDi()._province()
+
 
 # TaoJinDi()._province()
 # TaoJinDi()._sec_cate("http://hy.taojindi.com/region/beijing1/")
 # TaoJinDi()._tatal_pages("http://hy.taojindi.com/region/beijing1/")
 # TaoJinDi()._plist("http://hy.taojindi.com/region/beijing1/")
-TaoJinDi()._detail("http://hy.taojindi.com/scompany441941/")
+# TaoJinDi()._detail("http://hy.taojindi.com/scompany441941/")
