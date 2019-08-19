@@ -340,7 +340,7 @@ class TaoJin(Base):
     products = Column(String(256))
     enterpriseType = Column(String(32))
     url = Column(String(66), index=True)
-    industry = Column(String(66))
+    industry = Column(String(128))
     category = Column(String(48))
     establishedTime = Column(String(64))
     about = Column(LONGTEXT)

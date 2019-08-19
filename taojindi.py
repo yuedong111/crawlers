@@ -64,6 +64,8 @@ class TaoJinDi(object):
         for a in mas:
             d_u = "http://hy.taojindi.com" + a.get("href")
             temp.append((d_u, a.text))
+        for item in temp:
+            self._tatal_pages(*item)
 
     @second_run
     def _tatal_pages(self, url, category):
@@ -78,11 +80,12 @@ class TaoJinDi(object):
         total_pages = math.ceil(total/10)
         count = 1
         while count < total_pages + 1:
-            d_u = url.split(".htm")[0] + "-page-{}.html".format(count)
+            d_u = url[:-1] + "_{}/".format(count)
             if self.jump in d_u:
                 self.status = True
             if not self.status:
                 count = count + 1
+                print("tiaoguo {}".format(d_u))
                 continue
             self._plist(d_u, category)
             count = count + 1
