@@ -277,7 +277,7 @@ class HuangYe(Base):
     url = Column(String(66), index=True)
     industry = Column(String(66))
     category = Column(String(48))
-    businessModel = Column(String(24))
+    businessModel = Column(String(48))
     status = Column(String(12))
     customers = Column(String(66))
     establishedTime = Column(String(64))
@@ -322,9 +322,27 @@ class MetalInc(Base):
     url = Column(String(66), index=True)
     products = Column(String(256))
     enterpriseType = Column(String(66))
-    industry = Column(String(256))
-    businessModel = Column(String(24))
+    industry = Column(String(512))
+    businessModel = Column(String(48))
     businessScope = Column(String(666))
+    about = Column(LONGTEXT)
+
+
+class TaoJin(Base):
+    __tablename__ = "taojindi"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    enterpriseName = Column(String(128), index=True)
+    address = Column(String(228))
+    phone = Column(String(88))
+    representative = Column(String(40))
+    contact = Column(String(30))
+    location = Column(String(66))
+    products = Column(String(256))
+    enterpriseType = Column(String(32))
+    url = Column(String(66), index=True)
+    industry = Column(String(66))
+    category = Column(String(48))
+    establishedTime = Column(String(64))
     about = Column(LONGTEXT)
 
 
