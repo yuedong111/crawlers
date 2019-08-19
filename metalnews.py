@@ -48,7 +48,7 @@ class MetalNews(object):
         self.session.headers["Cache-Control"] = "max-age=0"
         self.session.headers["Connection"] = "keep-alive"
         self.session.headers["Host"] = "www.metalnews.cn"
-        self.jump = "search-htm-areaid-3-page-48.html"
+        self.jump = "search-htm-areaid-33-page-14.html"
         self.status = False
 
     def _province(self):
@@ -61,15 +61,17 @@ class MetalNews(object):
 
     def _total_page(self, url):
         time.sleep(0.2)
+        print("total {}".format(url))
         r = self.session.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         div = soup.find("div", class_="pages")
         if not div:
             total_pages = 1
-        cite = div.find("cite")
-        temp = cite.text
-        temp = temp.split("/")[-1]
-        total_pages = int(temp[:-1])
+        else:
+            cite = div.find("cite")
+            temp = cite.text
+            temp = temp.split("/")[-1]
+            total_pages = int(temp[:-1])
         count = 1
         while count < total_pages + 1:
             d_u = url.split(".htm")[0] + "-page-{}.html".format(count)
