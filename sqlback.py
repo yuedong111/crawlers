@@ -1,5 +1,5 @@
 from utils.models import MeiTuanShop, JingDong, EnterpriseCq, GoverNews, WaiMai, XieCheng, DZDianPingCQ, TuNiu, ShunQi, \
-    WGQY, TuNiuAll, BFZY, DZDianPing, BFZYCQ, SouLeWang, QYLu, HuangYe, CnTrade, MetalInc
+    WGQY, TuNiuAll, BFZY, DZDianPing, BFZYCQ, SouLeWang, QYLu, HuangYe, CnTrade, MetalInc, TaoJin
 from utils.sqlbackends import session_scope, session_scope_remote
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -56,6 +56,7 @@ query_map = {"MeiTuanShop": "select id from meiTuanShop where shop='{shop}' and 
              "HuangYe": "select id from huangye88 where url = '{url}'",
              "CnTrade":  "select id from cntrade where url = '{url}'",
              "MetalInc": "select id from metalinc where url = '{url}'",
+             "TaoJin": "select id from taojindi where url = '{url}'",
              }
 
 
@@ -148,7 +149,7 @@ def tuniutongbu():
 
 if __name__ == "__main__":
     zengliang_back()
-    # tuniutongbu()
+    tuniutongbu()
     # total_count()
     # scheduler = BackgroundScheduler()
     # scheduler.add_job(zengliang_back, 'interval', hours=6)
