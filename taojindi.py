@@ -148,7 +148,7 @@ class TaoJinDi(object):
         ss_industry = "主营行业："
         ss_registeredFunds = "注册资金："
         ss_representative = "企业法人："
-        ss_establishedTime = "成立时间："
+        ss_establishedTime = "成立日期："
         ss_address = "地址："
         ss_products = "主营产品："
         tem = locals()
